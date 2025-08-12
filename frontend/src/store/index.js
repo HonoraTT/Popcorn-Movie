@@ -1,9 +1,9 @@
 import { createStore } from 'vuex'
-import { login, logout } from '@/api/auth'
+import { login, logout, getCurrentUser } from '@/api/auth'
 
 export default createStore({
   state: {
-    user: null,
+    user: JSON.parse(localStorage.getItem('user')) || null,
     token: localStorage.getItem('token') || null,
     movies: [],
     banners: [],
@@ -12,6 +12,7 @@ export default createStore({
   mutations: {
     SET_USER(state, user) {
       state.user = user
+      localStorage.setItem('user', JSON.stringify(user))
     },
     SET_TOKEN(state, token) {
       state.token = token
@@ -20,6 +21,7 @@ export default createStore({
     CLEAR_USER(state) {
       state.user = null
       state.token = null
+      localStorage.removeItem('user')
       localStorage.removeItem('token')
     },
     SET_MOVIES(state, movies) {
@@ -39,10 +41,13 @@ export default createStore({
         const response = await login(loginData)
         if (response.success) {
           commit('SET_USER', response.user)
-          commit('SET_TOKEN', response.token || 'mock-token')
+          commit('SET_TOKEN', response.token)
+          console.log('登录成功，用户信息:', response.user)
+          console.log('Token:', response.token)
         }
         return response
       } catch (error) {
+        console.error('登录失败:', error)
         throw error
       }
     },
@@ -55,6 +60,22 @@ export default createStore({
       } catch (error) {
         console.error('退出失败:', error)
         commit('CLEAR_USER')
+      }
+    },
+
+    // 初始化用户状态
+    async initUserState({ commit }) {
+      const token = localStorage.getItem('token')
+      const user = localStorage.getItem('user')
+      
+      if (token && user) {
+        try {
+          commit('SET_TOKEN', token)
+          commit('SET_USER', JSON.parse(user))
+        } catch (error) {
+          console.error('恢复用户状态失败:', error)
+          commit('CLEAR_USER')
+        }
       }
     },
 
@@ -74,7 +95,7 @@ export default createStore({
     }
   },
   getters: {
-    isLoggedIn: state => !!state.token,
+    isLoggedIn: state => !!(state.token && state.user),
     currentUser: state => state.user,
     movies: state => state.movies,
     banners: state => state.banners,

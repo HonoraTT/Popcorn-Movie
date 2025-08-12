@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useStore } from 'vuex'
 import Home from '@/views/Home.vue'
 
 const routes = [
@@ -30,18 +31,36 @@ const routes = [
   {
     path: '/select-seat/:showId',
     name: 'SelectSeat',
-    component: () => import('@/views/SelectSeat.vue')
+    component: () => import('@/views/SelectSeat.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/payment',
     name: 'Payment',
-    component: () => import('@/views/Payment.vue')
+    component: () => import('@/views/Payment.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  const store = useStore()
+  
+  // 检查是否需要登录
+  if (to.meta.requiresAuth) {
+    const isLoggedIn = store.getters.isLoggedIn
+    if (!isLoggedIn) {
+      next('/login')
+      return
+    }
+  }
+  
+  next()
 })
 
 export default router

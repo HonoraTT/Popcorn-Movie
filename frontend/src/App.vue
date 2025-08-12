@@ -1,4 +1,15 @@
-<script setup></script>
+<script setup>
+import { onMounted } from 'vue'
+import { useStore } from 'vuex'
+import NavBar from '@/components/NavBar.vue'
+
+const store = useStore()
+
+onMounted(() => {
+  // 初始化用户状态
+  store.dispatch('initUserState')
+})
+</script>
 
 <template>
   <div id="app">
@@ -12,17 +23,6 @@
     </el-container>
   </div>
 </template>
-
-<script>
-import NavBar from '@/components/NavBar.vue'
-
-export default {
-  name: 'App',
-  components: {
-    NavBar
-  }
-}
-</script>
 
 <style>
 #app {

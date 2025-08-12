@@ -97,9 +97,18 @@ public class ApiController {
             
             User user = userService.getUserInstance(email, password);
             if (user != null) {
+                // 创建用户信息Map，避免序列化问题
+                Map<String, Object> userInfo = new HashMap<>();
+                userInfo.put("id", user.getId());
+                userInfo.put("email", user.getEmail());
+                userInfo.put("firstName", user.getFirstName());
+                userInfo.put("lastName", user.getLastName());
+                userInfo.put("username", user.getFirstName() + " " + user.getLastName());
+                
                 response.put("success", true);
                 response.put("message", "登录成功");
-                response.put("user", user);
+                response.put("user", userInfo);
+                response.put("token", "user-" + user.getId() + "-" + System.currentTimeMillis()); // 生成简单token
                 return ResponseEntity.ok(response);
             } else {
                 response.put("success", false);
