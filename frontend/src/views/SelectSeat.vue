@@ -275,7 +275,7 @@ export default {
     }
 
     onMounted(() => {
-  console.log('当前路由参数:', route.params);
+      console.log('当前路由参数:', route.params);
       loadSeatData()
     })
 

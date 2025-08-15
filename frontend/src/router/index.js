@@ -29,7 +29,7 @@ const routes = [
     component: () => import('@/views/SelectShow.vue')
   },
   {
-    path: '/select-seat/:showId/:movieId',
+    path: '/select-seat/:movieId/:showId',
     name: 'SelectSeat',
     component: () => import('@/views/SelectSeat.vue'),
     meta: { requiresAuth: true }
