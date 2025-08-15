@@ -16,6 +16,7 @@ public class AuthApiController {
     
     @Autowired
     private UserService userService;
+
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -37,11 +38,32 @@ public class AuthApiController {
     
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        // 这里需要实现注册逻辑
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "注册功能待实现");
-        response.put("success", false);
-        return ResponseEntity.badRequest().body(response);
+        // 1. 验证用户名是否已存在
+        if (userService.isRegistered(request.getEmail())) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "邮箱已被占用");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // 2. 创建用户
+        userService.registerUser(
+                request.getEmail(),
+                request.getPassword(),
+                request.getFirstName(),
+                request.getLastName() // lastName留空或移除相关逻辑
+        );
+
+        // 3. 返回成功响应
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("username", request.getFirstName());
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("success", true);
+        responseMap.put("message", "注册成功");
+        responseMap.put("data", dataMap);
+
+        return ResponseEntity.ok(responseMap);
     }
     
     @PostMapping("/logout")
@@ -64,15 +86,22 @@ public class AuthApiController {
     }
     
     public static class RegisterRequest {
-        private String username;
+        private String firstName;
         private String email;
         private String password;
-        
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
+        private String lastName;
+
+        public String getFirstName() { return firstName; }
+
+        public void setFirstName(String firstName) { this.firstName = firstName; }
+
         public String getEmail() { return email; }
         public void setEmail(String email) { this.email = email; }
         public String getPassword() { return password; }
         public void setPassword(String password) { this.password = password; }
+
+        public String getLastName() { return lastName; }
+
+        public void setLastName(String lastname) { this.lastName = lastname; }
     }
 } 
