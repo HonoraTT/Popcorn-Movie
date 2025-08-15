@@ -71,7 +71,6 @@ export default {
       email: '',
       password: ''
     })
-    
     const rules = {
       email: [
         { required: true, message: '请输入邮箱', trigger: 'blur' },

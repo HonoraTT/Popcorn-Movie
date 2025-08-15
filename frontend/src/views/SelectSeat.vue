@@ -110,7 +110,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
-import { getSeatMap, bookSeats } from '@/api/booking'
+import { getMovieById } from '@/api/movie'
+import { getSeatMap, bookSeats, getShowById } from '@/api/booking'
 import { ElMessage } from 'element-plus'
 
 export default {
@@ -121,7 +122,10 @@ export default {
     const route = useRoute()
     
     const currentUser = computed(() => store.getters.currentUser)
+    const movieId = ref(route.params.movieId)
     const showId = ref(route.params.showId)
+    const movie = ref({})
+    const show = ref({})
     const movieName = ref('')
     const showTime = ref('')
     const price = ref(0)
@@ -141,12 +145,22 @@ export default {
         const response = await getSeatMap(showId.value)
         seatMap.value = response.seatMap
         soldSeats.value = response.soldSeats || []
-        
-        // 这里应该从API获取电影和场次信息
-        // 暂时使用默认值
-        movieName.value = 'Movie Name'
-        showTime.value = '2025-08-09 14:30'
-        price.value = 25
+
+        const [showRes, movieRes] = await Promise.all([
+          getShowById(showId.value),
+          getMovieById(movieId.value)
+        ]);
+
+        show.value = showRes;
+        movie.value = movieRes;
+        console.log('处理后的数据:', {
+          movie: movie.value,
+          show: show.value
+        })
+
+        movieName.value = movie.value.name || '未知电影';
+        showTime.value = show.value.time || '未知时间';
+        price.value = show.value.price || 0;
         
         initializeSeatChart()
       } catch (error) {
@@ -261,6 +275,7 @@ export default {
     }
 
     onMounted(() => {
+  console.log('当前路由参数:', route.params);
       loadSeatData()
     })
 

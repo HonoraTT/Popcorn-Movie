@@ -87,7 +87,7 @@
                    :id="tag.name" 
                    aria-labelledby="home-tab">
                 <div class="w3l-movie-gride-agile" 
-                     v-for="movie in moviesByTag[tag.name]" 
+                    v-for="movie in moviesByTag[tag.name]" 
                      :key="movie.id">
                   <a :name="movie.name"
                      :href="`/select-show/${movie.id}`"

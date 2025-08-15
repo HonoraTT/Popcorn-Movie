@@ -69,7 +69,7 @@
                 </li>
                 <li class="time" v-for="show in theater.showList" :key="show.id">
                   <router-link 
-                    :to="`/select-seat/${show.id}?movie_id=${movie.id}&show_id=${show.id}`">
+                    :to="`/select-seat/${movie.id}/${show.id}?movie_id=${movie.id}&show_id=${show.id}`">
                     {{ show.time }}
                   </router-link>
                 </li>
