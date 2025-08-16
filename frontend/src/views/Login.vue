@@ -1,55 +1,70 @@
 <template>
-  <div class="login-container">
-    <el-card class="login-card">
-      <template #header>
-        <h2>用户登录</h2>
-      </template>
-      
-      <el-form 
-        :model="loginForm" 
-        :rules="rules" 
-        ref="loginFormRef"
-        label-width="80px"
-      >
-        <el-form-item label="邮箱" prop="email">
-          <el-input 
-            v-model="loginForm.email" 
-            placeholder="请输入邮箱"
-            type="email"
-          />
-        </el-form-item>
+  <div class="login-page">
+    <div class="container">
+      <div class="container_wrap">
+        <div class="header_top">
+          <div class="col-sm-3 logo">
+            <router-link to="/">
+              <img src="/templates/images/nav/logo.png" alt="Logo"/>
+            </router-link>
+          </div>
+          <div class="col-sm-6 nav"></div>
+          <div class="col-sm-3 header_right">
+            <ul class="header_right_box">
+              <li>
+                <img v-if="username" :src="userIconPath" alt="User Icon"/>
+              </li>
+              <li>
+                <p>
+                  <router-link v-if="username" to="/">{{ username }}</router-link>
+                  <router-link v-else to="/login">Login</router-link>
+                </p>
+              </li>
+              <li v-if="!username" class="last"><i class="edit"></i></li>
+              <div class="clearfix"></div>
+            </ul>
+          </div>
+          <div class="clearfix"></div>
+        </div>
         
-        <el-form-item label="密码" prop="password">
-          <el-input 
-            v-model="loginForm.password" 
-            placeholder="请输入密码"
-            type="password"
-            show-password
-          />
-        </el-form-item>
-        
-        <el-form-item>
-          <el-button 
-            type="primary" 
-            @click="handleLogin"
-            :loading="loading"
-            style="width: 100%"
-          >
-            登录
-          </el-button>
-        </el-form-item>
-        
-        <el-form-item>
-          <el-button 
-            type="text" 
-            @click="$router.push('/register')"
-            style="width: 100%"
-          >
-            还没有账号？立即注册
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+        <div class="content">
+          <div class="register">
+            <div class="col-md-6 login-left">
+              <h3>New Customers</h3>
+              <p>By creating an account with our store, you will be able to move through the checkout process faster, store multiple shipping addresses, view and track your orders in your account and more.</p>
+              <router-link class="acount-btn" to="/register">Create an Account</router-link>
+            </div>
+            
+            <div class="col-md-6 login-right">
+              <h3>Registered Customers</h3>
+              <p>If you have an account with us, please log in.</p>
+              <el-form 
+                ref="loginFormRef" 
+                :model="loginForm" 
+                :rules="rules"
+  >
+                <div>
+                  <span>Email Address<label>*</label></span>
+                  <input v-model="loginForm.email" name="email" type="text" />
+                </div>
+                <div>
+                  <span>Password<label>*</label></span>
+                  <input v-model="loginForm.password" name="password" type="password"/>
+                </div>
+                <el-button 
+                  :loading="loading" 
+                  @click="handleLogin"
+                >
+                  登录
+                </el-button>
+              </el-form>
+            </div>
+            
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -64,40 +79,60 @@ export default {
   setup() {
     const store = useStore()
     const router = useRouter()
-    const loginFormRef = ref()
+    const loginFormRef = ref(null)
     const loading = ref(false)
     
+    // 表单数据
     const loginForm = reactive({
       email: '',
       password: ''
     })
-    const rules = {
+    
+    // 验证规则
+    const rules = reactive({
       email: [
         { required: true, message: '请输入邮箱', trigger: 'blur' },
-        { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+        { type: 'email', message: '请输入正确的邮箱格式', trigger: ['blur', 'change'] }
       ],
       password: [
         { required: true, message: '请输入密码', trigger: 'blur' },
-        { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+        { min: 6, message: '密码长度不能少于6位', trigger: ['blur', 'change'] }
       ]
-    }
+    })
     
+    // 登录方法
     const handleLogin = async () => {
       try {
+        // 表单验证
         await loginFormRef.value.validate()
         loading.value = true
         
-        const response = await store.dispatch('login', loginForm)
+        // 调用Vuex action进行登录
+        const response = await store.dispatch('login', {
+          email: loginForm.email,
+          password: loginForm.password
+        })
         
-        if (response.success) {
-          ElMessage.success('登录成功')
-          router.push('/')
+        // 处理登录结果
+        if (response?.success) {
+          ElMessage.success(response.message || '登录成功')
+          router.push(response.redirect || '/')
         } else {
-          ElMessage.error(response.message || '登录失败')
+          throw new Error(response?.message || '登录失败')
         }
       } catch (error) {
-        console.error('登录失败:', error)
-        ElMessage.error('登录失败，请检查邮箱和密码')
+        console.error('登录错误:', error)
+        
+        // 更精细的错误处理
+        if (error.message.includes('Network Error')) {
+          ElMessage.error('网络错误，请检查网络连接')
+        } else if (error.response?.status === 401) {
+          ElMessage.error('邮箱或密码错误')
+        } else if (error.response?.status === 404) {
+          ElMessage.error('登录接口不存在，请联系管理员')
+        } else {
+          ElMessage.error(error.message || '登录失败，请重试')
+        }
       } finally {
         loading.value = false
       }
@@ -115,6 +150,9 @@ export default {
 </script>
 
 <style scoped>
+@import url('/templates/css/bootstrap.css');
+@import url('/templates/css/homepage/style.css');
+@import url('/templates/css/common.css');
 .login-container {
   display: flex;
   justify-content: center;
