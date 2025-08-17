@@ -1,6 +1,6 @@
 <template>
   <div class="nav-bar">
-    <el-menu 
+    <!-- <el-menu 
       :default-active="activeIndex" 
       mode="horizontal" 
       router
@@ -36,11 +36,11 @@
           <span>注册</span>
         </el-menu-item>
       </template>
-    </el-menu>
+    </el-menu> -->
   </div>
 </template>
 
-<script>
+<!-- <script>
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
@@ -101,4 +101,4 @@ export default {
   align-items: center;
   gap: 4px;
 }
-</style> 
+</style>  -->
