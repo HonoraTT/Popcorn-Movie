@@ -68,22 +68,25 @@
                   :key="tag.name"
                   role="presentation" 
                   class="tab"
+                  @click="activeTab = tag.name"
                   :class="{ active: index === 0 }">
                 <a :href="`#${tag.name}`"
                    id="home-tab" 
                    role="tab"
                    data-toggle="tab"
+                  :aria-selected="activeTab === tag.name"
+                  :class="{ active: activeTab === tag.name }"
                    aria-controls="home"
                    aria-expanded="true"
                    style="color:white">{{ tag.name }}</a>
               </li>
             </ul>
             <div id="myTabContent" class="tab-content">
-              <div v-for="(tag, tagIndex) in tags" 
+              <div v-for="tag in tags" 
                    :key="tag.name"
                    role="tabpanel" 
                    class="tab-pane fade in"
-                   :class="{ active: tagIndex === 0 }" 
+             :class="{ active: activeTab === tag.name }"
                    :id="tag.name" 
                    aria-labelledby="home-tab">
                 <div class="w3l-movie-gride-agile" 
@@ -132,6 +135,7 @@ export default {
     const tags = ref([])
     const moviesByTag = ref({})
     const loading = ref(false)
+    const activeTab = ref(tags.value[0]?.name || '')
 
     const currentUser = computed(() => store.getters.currentUser)
 
@@ -144,6 +148,11 @@ export default {
         ])
         banners.value = bannersData
         tags.value = tagsData
+
+        
+        if (tags.value.length > 0) {
+          activeTab.value = tags.value[0].name
+        }
 
         // 加载每个标签的电影
         for (const tag of tagsData) {
@@ -192,6 +201,12 @@ export default {
       if (typeof $ !== 'undefined') {
         $('.carousel').carousel()
       }
+      if (typeof $ !== 'undefined') {
+        $('[data-toggle="tab"]').on('click', function(e) {
+          e.preventDefault()
+          activeTab.value = $(this).attr('href').substring(1)
+        })
+      }
     })
 
     return {
@@ -200,6 +215,7 @@ export default {
       moviesByTag,
       loading,
       currentUser,
+      activeTab,
       handleLogout,
       getImageUrl
     }
