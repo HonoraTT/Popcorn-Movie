@@ -1,10 +1,10 @@
-# MovieTime 电影购票系统
+# Popcorn-Movie 电影购票系统
 
 一个基于Spring Boot + Vue.js的前后端分离电影购票系统。
 
 ## 🎬 项目简介
 
-MovieTime是一个现代化的电影购票系统，提供完整的电影浏览、场次选择、座位预订和支付功能。系统采用前后端分离架构，后端使用Spring Boot框架，前端使用Vue.js构建。
+PopcornMovie是一个现代化的电影购票系统，提供完整的电影浏览、场次选择、座位预订和支付功能。系统采用前后端分离架构，后端使用Spring Boot框架，前端使用Vue.js构建。
 
 ## ✨ 主要功能
 
