@@ -9,12 +9,12 @@
         <set>
             <if test="isBooked != null">is_booked = #{isBooked}</if>
         </set>
-        WHERE show_id = #{showId} AND row = #{row} AND col = #{col}
+        WHERE show_id = #{showId} AND `row` = #{row} AND col = #{col}
     </update>
 
     <select id="occupied" resultType="boolean">
         SELECT is_booked FROM seat
-        WHERE show_id = #{showId} AND row = #{row} AND col = #{col} FOR UPDATE
+        WHERE show_id = #{showId} AND `row` = #{row} AND col = #{col} FOR UPDATE
     </select>
 
     <select id="findAllBooked" resultType="Seat">
