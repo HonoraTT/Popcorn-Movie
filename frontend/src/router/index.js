@@ -19,11 +19,6 @@ const routes = [
     component: () => import('@/views/Register.vue')
   },
   {
-    path: '/movie/:id',
-    name: 'MovieDetail',
-    component: () => import('@/views/MovieDetail.vue')
-  },
-  {
     path: '/select-show/:movieId',
     name: 'SelectShow',
     component: () => import('@/views/SelectShow.vue')
