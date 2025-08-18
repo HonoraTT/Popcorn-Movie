@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.movietime</groupId>
-    <artifactId>MovieTime</artifactId>
+    <artifactId>PopcornMovie</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>MovieTime Spring Boot</name>
-    <description>MovieTime 电影购票系统 - Spring Boot版本</description>
+    <name>PopcornMovie Spring Boot</name>
+    <description>PopcornMovie 电影购票系统 - Spring Boot版本</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -108,7 +108,7 @@
     </dependencies>
 
     <build>
-        <finalName>MovieTime</finalName>
+        <finalName>PopcornMovie</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

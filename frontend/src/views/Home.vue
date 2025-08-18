@@ -1,19 +1,21 @@
 <template>
   <div class="container">
     <div class="container_wrap">
+
+
       <!-- 头部导航 -->
       <div class="header_top">
-        <div class="col-sm-3 logo">
-          <a href="/"><img src="/templates/images/nav/logo.png" alt=""/></a>
+        <div class="col-sm-4 logo">
+          <a href="/"><div class="logo-container"><img src="/templates/images/nav/logo.png" alt="" class="logo-image"/></div></a>
         </div>
-        <div class="col-sm-6 nav"></div>
-        <div class="col-sm-3 header_right">
+        <div class="col-sm-4 nav"></div>
+        <div class="col-sm-4 header_right">
           <ul class="header_right_box">
             <li>
-              <img v-if="currentUser" :src="currentUser.iconPath || '/templates/images/user_icon/p1.png'" alt="icon"/>
+              <img v-if="currentUser" :src="currentUser.iconPath || '/templates/images/user_icon/p1.png'" alt="icon" class="user-avatar"/>
             </li>
             <li>
-              <p>
+              <p class="user-info">
                 <a v-if="currentUser" style="cursor:default;" href="/">{{ currentUser.username }}</a>
                 <a v-if="currentUser" href="#" @click="handleLogout">
                   <img src="/templates/images/others/logout.png" style="width:20px; margin-left: 3px; height:25px;"/>
@@ -230,6 +232,50 @@ export default {
 @import url('/templates/css/homepage/featureMoviesCSS/style_featureMovies.css');
 @import url('/templates/css/homepage/featureMoviesCSS/medile.css');
 
+
+
+/* Logo样式 */
+.logo-container {
+  width: 280px;
+  height: 100px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.logo-image {
+  height: 140px;
+  width: auto;
+  object-fit: cover;
+  object-position: left center;
+  transform: scale(1.2);
+  transform-origin: left center;
+}
+
+/* 用户信息样式 */
+.header_right_box {
+  display: flex;
+  align-items: center;
+  height: 100px;
+  margin: 0;
+  padding: 0;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
 /* 自定义样式：优化电影标题显示 */
 .w3l-movie-text h6 {
   margin: 0;
@@ -241,7 +287,7 @@ export default {
 }
 
 .w3l-movie-text h6 a {
-  font-size: 1.2em !important;
+  font-size: 0.9em !important;
   line-height: 1.2;
   text-align: center;
   display: -webkit-box;
@@ -306,29 +352,7 @@ html, body {
   min-height: 100vh !important;
 }
 
-/* 星空效果 - 强制显示 */
-html::before {
-  content: '' !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  background-image: 
-    radial-gradient(2px 2px at 20px 30px, #eee, transparent),
-    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1px 1px at 90px 40px, #fff, transparent),
-    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
-    radial-gradient(2px 2px at 160px 30px, #ddd, transparent),
-    radial-gradient(1px 1px at 200px 150px, #fff, transparent),
-    radial-gradient(2px 2px at 300px 80px, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1px 1px at 400px 200px, #ddd, transparent) !important;
-  background-repeat: repeat !important;
-  background-size: 400px 200px !important;
-  animation: twinkle 4s ease-in-out infinite !important;
-  z-index: -1 !important;
-  pointer-events: none !important;
-}
+
 
 /* 内容区域样式 - 修复间距 */
 .container {

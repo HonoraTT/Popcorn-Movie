@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useStore } from 'vuex'
-import NavBar from '@/components/NavBar.vue'
 
 const store = useStore()
 
@@ -13,14 +12,7 @@ onMounted(() => {
 
 <template>
   <div id="app">
-    <el-container>
-      <el-header>
-        <nav-bar />
-      </el-header>
-      <el-main>
-        <router-view />
-      </el-main>
-    </el-container>
+    <router-view />
   </div>
 </template>
 
@@ -31,13 +23,5 @@ onMounted(() => {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.el-header {
-  padding: 0;
-  height: auto;
-}
 
-.el-main {
-  padding: 20px;
-  min-height: calc(100vh - 60px);
-}
 </style>
