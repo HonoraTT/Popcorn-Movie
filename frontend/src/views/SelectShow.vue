@@ -124,6 +124,12 @@
                     :class="{ active: selectedBrand === '全部' }"
                     @click="selectFilter('brand', '全部')">全部</span>
               <span class="filter-tag" 
+                    :class="{ active: selectedBrand === 'UKnow' }"
+                    @click="selectFilter('brand', 'UKnow')">UKnow影院</span>
+              <span class="filter-tag" 
+                    :class="{ active: selectedBrand === 'BigFeel' }"
+                    @click="selectFilter('brand', 'BigFeel')">BigFeel影院</span>
+              <span class="filter-tag" 
                     :class="{ active: selectedBrand === '万达影城' }"
                     @click="selectFilter('brand', '万达影城')">万达影城</span>
               <span class="filter-tag" 
@@ -197,18 +203,16 @@
           
           <div class="cinema-item" v-for="theater in theaterList" :key="theater.id">
             <div class="cinema-info">
-              <div class="cinema-name">{{ theater.name }}影院</div>
-              <div class="cinema-address">武汉市洪山区光谷广场</div>
+              <div class="cinema-name">{{ getCinemaDisplayName(theater.name) }}</div>
+              <div class="cinema-address">{{ getCinemaAddress(theater.name) }}</div>
               <div class="cinema-services">
-                <span class="service-tag">改签</span>
-                <span class="service-tag">折扣卡</span>
-                <span class="service-tag">激光厅</span>
+                <span class="service-tag" v-for="service in getCinemaServices(theater.name)" :key="service">{{ service }}</span>
               </div>
             </div>
             
             <div class="cinema-pricing">
-              <div class="price">¥19.9起</div>
-              <div class="distance">15km</div>
+              <div class="price">{{ getCinemaPrice(theater.name) }}</div>
+              <div class="distance">{{ getCinemaDistance(theater.name) }}</div>
             </div>
             
             <div class="showtimes">
@@ -239,7 +243,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import { getMovieById } from '@/api/movie'
@@ -255,6 +259,7 @@ export default {
     
     const movie = ref({})
     const theaterList = ref([])
+    const originalTheaterList = ref([]) // 保存原始数据用于筛选
     const loading = ref(false)
     const currentUser = computed(() => store.getters.currentUser)
     
@@ -329,7 +334,49 @@ export default {
 
     // 筛选影院
     const filterTheaters = () => {
-      // 这里可以实现根据筛选条件过滤影院的逻辑
+      // 获取原始影院数据（从API获取的完整数据）
+      const originalTheaters = originalTheaterList.value
+      
+      // 应用筛选条件
+      let filteredTheaters = originalTheaters.filter(theater => {
+        // 品牌筛选
+        if (selectedBrand.value !== '全部') {
+          const theaterBrand = getTheaterBrand(theater.name)
+          if (theaterBrand !== selectedBrand.value) {
+            return false
+          }
+        }
+        
+        // 行政区筛选
+        if (selectedDistrict.value !== '全部') {
+          const theaterDistrict = getTheaterDistrict(theater.name)
+          if (theaterDistrict !== selectedDistrict.value) {
+            return false
+          }
+        }
+        
+        // 影厅类型筛选
+        if (selectedHallType.value !== '全部') {
+          const theaterServices = getCinemaServices(theater.name)
+          if (!theaterServices.includes(selectedHallType.value)) {
+            return false
+          }
+        }
+        
+        // 影院服务筛选
+        if (selectedService.value !== '全部') {
+          const theaterServices = getCinemaServices(theater.name)
+          if (!theaterServices.includes(selectedService.value)) {
+            return false
+          }
+        }
+        
+        return true
+      })
+      
+      // 更新显示的影院列表
+      theaterList.value = filteredTheaters
+      
       console.log('筛选条件:', {
         date: selectedDate.value,
         brand: selectedBrand.value,
@@ -337,6 +384,7 @@ export default {
         hallType: selectedHallType.value,
         service: selectedService.value
       })
+      console.log('筛选结果:', filteredTheaters)
     }
 
     const loadMovieData = async () => {
@@ -379,7 +427,9 @@ export default {
             })
           })
           
-          theaterList.value = Array.from(theaterMap.values())
+          const processedTheaters = Array.from(theaterMap.values())
+          theaterList.value = processedTheaters
+          originalTheaterList.value = processedTheaters // 保存原始数据用于筛选
         }
         console.log('处理后的数据:', {
           movie: movie.value,
@@ -407,6 +457,93 @@ export default {
       loadMovieData()
     })
 
+    // 监听数据变化，应用筛选
+    watch([originalTheaterList], () => {
+      if (originalTheaterList.value.length > 0) {
+        filterTheaters()
+      }
+    })
+
+    // 影院信息辅助函数
+    const getCinemaDisplayName = (theaterName) => {
+      const cinemaMap = {
+        'UKnow': 'UKnow影院',
+        'BigFeel': 'BigFeel影院',
+        'EyeBrand': '万达影城',
+        'Happy': '金逸影城',
+        'ABC': 'CGV影城'
+      }
+      return cinemaMap[theaterName] || `${theaterName}影院`
+    }
+
+    const getCinemaAddress = (theaterName) => {
+      const addressMap = {
+        'UKnow': '武汉市洪山区光谷广场',
+        'BigFeel': '武汉市洪山区光谷广场',
+        'EyeBrand': '武汉市江汉区万达广场',
+        'Happy': '武汉市江夏区金逸影城',
+        'ABC': '武汉市洪山区CGV影城'
+      }
+      return addressMap[theaterName] || '武汉市洪山区光谷广场'
+    }
+
+    const getCinemaServices = (theaterName) => {
+      const servicesMap = {
+        'UKnow': ['改签', '折扣卡', '激光厅'],
+        'BigFeel': ['改签', '折扣卡', '激光厅'],
+        'EyeBrand': ['改签', '退票', 'IMAX厅', '杜比全景声'],
+        'Happy': ['改签', '折扣卡', '4D厅'],
+        'ABC': ['改签', '退票', 'IMAX厅', 'VIP厅']
+      }
+      return servicesMap[theaterName] || ['改签', '折扣卡', '激光厅']
+    }
+
+    const getCinemaPrice = (theaterName) => {
+      const priceMap = {
+        'UKnow': '¥19.9起',
+        'BigFeel': '¥19.9起',
+        'EyeBrand': '¥35.0起',
+        'Happy': '¥25.0起',
+        'ABC': '¥30.0起'
+      }
+      return priceMap[theaterName] || '¥19.9起'
+    }
+
+    const getCinemaDistance = (theaterName) => {
+      const distanceMap = {
+        'UKnow': '15km',
+        'BigFeel': '15km',
+        'EyeBrand': '8km',
+        'Happy': '12km',
+        'ABC': '10km'
+      }
+      return distanceMap[theaterName] || '15km'
+    }
+
+    // 获取影院品牌（用于筛选）
+    const getTheaterBrand = (theaterName) => {
+      const brandMap = {
+        'UKnow': 'UKnow',
+        'BigFeel': 'BigFeel',
+        'EyeBrand': '万达影城',
+        'Happy': '金逸影城',
+        'ABC': 'CGV影城'
+      }
+      return brandMap[theaterName] || 'UKnow'
+    }
+
+    // 获取影院所在行政区（用于筛选）
+    const getTheaterDistrict = (theaterName) => {
+      const districtMap = {
+        'UKnow': '洪山区',
+        'BigFeel': '洪山区',
+        'EyeBrand': '江汉区',
+        'Happy': '江夏区',
+        'ABC': '洪山区'
+      }
+      return districtMap[theaterName] || '洪山区'
+    }
+
     return {
       movie,
       theaterList,
@@ -421,7 +558,14 @@ export default {
       selectDate,
       selectFilter,
       handleLogout,
-      getImageUrl
+      getImageUrl,
+      getCinemaDisplayName,
+      getCinemaAddress,
+      getCinemaServices,
+      getCinemaPrice,
+      getCinemaDistance,
+      getTheaterBrand,
+      getTheaterDistrict
     }
   }
 }
