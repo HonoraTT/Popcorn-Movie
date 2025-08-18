@@ -3,17 +3,19 @@
     <div class="container_wrap">
       <!-- 头部导航 -->
       <div class="header_top">
-        <div class="col-sm-3 logo">
-          <a href="/"><img src="/templates/images/nav/logo.png" alt=""/></a>
+        <div class="col-sm-4 logo">
+          <a href="/">
+            <div class="logo-container"><img src="/templates/images/nav/logo.png" alt="" class="logo-image"/></div>
+          </a>
         </div>
-        <div class="col-sm-6 nav"></div>
-        <div class="col-sm-3 header_right">
+        <div class="col-sm-4 nav"></div>
+        <div class="col-sm-4 header_right">
           <ul class="header_right_box">
             <li>
-              <img v-if="currentUser" :src="currentUser.iconPath || '/templates/images/user_icon/p1.png'" alt="icon"/>
+              <img v-if="currentUser" :src="currentUser.iconPath || '/templates/images/user_icon/p1.png'" alt="icon" class="user-avatar"/>
             </li>
             <li>
-              <p>
+              <p class="user-info">
                 <a v-if="currentUser" href="/">{{ currentUser.username }}</a>
                 <a v-else href="/login">登录</a>
               </p>
@@ -243,6 +245,48 @@ export default {
 @import url('/templates/css/bootstrap.css');
 @import url('/templates/css/homepage/style.css');
 @import url('/templates/css/common.css');
+
+/* Logo样式 */
+.logo-container {
+  width: 280px;
+  height: 100px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.logo-image {
+  height: 140px;
+  width: auto;
+  object-fit: cover;
+  object-position: left center;
+  transform: scale(1.2);
+  transform-origin: left center;
+}
+
+/* 用户信息样式 */
+.header_right_box {
+  display: flex;
+  align-items: center;
+  height: 100px;
+  margin: 0;
+  padding: 0;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
 
 /* 错误样式 */
 .error {

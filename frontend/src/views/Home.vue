@@ -287,7 +287,7 @@ export default {
 }
 
 .w3l-movie-text h6 a {
-  font-size: 0.9em !important;
+  font-size: 1.1em !important;
   line-height: 1.2;
   text-align: center;
   display: -webkit-box;

@@ -2,19 +2,19 @@
   <div class="select-show-page">
     <!-- 头部导航 -->
     <div class="header_top">
-      <div class="col-sm-3 logo">
+      <div class="col-sm-4 logo">
         <router-link to="/">
-          <img src="/templates/images/nav/logo.png" alt="Logo"/>
+          <div class="logo-container"><img src="/templates/images/nav/logo.png" alt="" class="logo-image"/></div>
         </router-link>
       </div>
-      <div class="col-sm-6 nav"></div>
-      <div class="col-sm-3 header_right">
+      <div class="col-sm-4 nav"></div>
+      <div class="col-sm-4 header_right">
         <ul class="header_right_box">
           <li>
-            <img v-if="currentUser" :src="currentUser.iconPath || '/templates/images/user_icon/p1.png'" alt="icon"/>
+            <img v-if="currentUser" :src="currentUser.iconPath || '/templates/images/user_icon/p1.png'" alt="icon" class="user-avatar"/>
           </li>
           <li>
-            <p>
+            <p class="user-info">
               <router-link v-if="currentUser" to="/" style="cursor:default;">{{ currentUser.username }}</router-link>
               <router-link v-if="currentUser" to="/logout">
                 <img src="/templates/images/others/logout.png" 
@@ -1077,6 +1077,62 @@ export default {
 .no-cinemas-subtext {
   font-size: 14px;
   color: #666;
+}
+
+/* Logo样式 */
+.logo-container {
+  width: 280px;
+  height: 100px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* 只针对SelectShow页面的logo位置调整 */
+.select-show-page .logo-container {
+  margin-left: 150px; /* 向右移动150px */
+}
+
+.logo-image {
+  height: 140px;
+  width: auto;
+  object-fit: cover;
+  object-position: left center;
+  transform: scale(1.2);
+  transform-origin: left center;
+}
+
+.logo-image {
+  height: 140px;
+  width: auto;
+  object-fit: cover;
+  object-position: left center;
+  transform: scale(1.2);
+  transform-origin: left center;
+}
+
+/* 用户信息样式 */
+.header_right_box {
+  display: flex;
+  align-items: center;
+  height: 100px;
+  margin: 0;
+  padding: 0;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
 }
 
 /* 筛选标签悬停效果增强 */
