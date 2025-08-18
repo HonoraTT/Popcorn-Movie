@@ -28,39 +28,74 @@
         </div>
         
         <div class="content">
-          <div class="register">
-            <div class="col-md-6 login-left">
-              <h3>新用户</h3>
-              <p>通过在我们的商店创建账户，您将能够更快地完成结账流程，存储多个送货地址，在您的账户中查看和跟踪订单等。</p>
-              <router-link class="acount-btn" to="/register">创建账户</router-link>
-            </div>
-            
-            <div class="col-md-6 login-right">
-              <h3>已注册用户</h3>
-              <p>如果您在我们这里已有账户，请登录。</p>
-              <el-form 
-                ref="loginFormRef" 
-                :model="loginForm" 
-                :rules="rules"
-  >
-                <div>
-                  <span>邮箱地址<label>*</label></span>
-                  <input v-model="loginForm.email" name="email" type="text" />
+          <div class="login-container">
+            <div class="login-card">
+              <div class="login-header">
+                <div class="logo-section">
+                  <div class="logo-icon">🎬</div>
+                  <h1>欢迎回来</h1>
+                  <p>登录您的PopcornMovie账户</p>
                 </div>
-                <div>
-                  <span>密码<label>*</label></span>
-                  <input v-model="loginForm.password" name="password" type="password"/>
-                </div>
-                <el-button 
-                  :loading="loading" 
-                  @click="handleLogin"
+              </div>
+              
+              <div class="login-form">
+                <el-form 
+                  ref="loginFormRef" 
+                  :model="loginForm" 
+                  :rules="rules"
+                  class="form-container"
                 >
-                  登录
-                </el-button>
-              </el-form>
+                  <div class="form-group">
+                    <label class="form-label">邮箱地址</label>
+                    <div class="input-wrapper">
+                      <i class="input-icon">📧</i>
+                      <input 
+                        v-model="loginForm.email" 
+                        name="email" 
+                        type="text"
+                        class="form-input"
+                        placeholder="请输入您的邮箱地址"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <div class="input-wrapper">
+                      <i class="input-icon">🔒</i>
+                      <input 
+                        v-model="loginForm.password" 
+                        name="password" 
+                        type="password"
+                        class="form-input"
+                        placeholder="请输入您的密码"
+                      />
+                    </div>
+                  </div>
+                  
+                  <el-button 
+                    :loading="loading" 
+                    @click="handleLogin"
+                    class="login-button"
+                    type="primary"
+                  >
+                    <span v-if="!loading">登录</span>
+                    <span v-else>登录中...</span>
+                  </el-button>
+                </el-form>
+                
+                <div class="divider">
+                  <span>或者</span>
+                </div>
+                
+                <div class="register-section">
+                  <p>还没有账户？</p>
+                  <router-link to="/register" class="register-link">
+                    立即注册
+                  </router-link>
+                </div>
+              </div>
             </div>
-            
-            <div class="clearfix"></div>
           </div>
         </div>
       </div>
@@ -153,27 +188,247 @@ export default {
 @import url('/templates/css/bootstrap.css');
 @import url('/templates/css/homepage/style.css');
 @import url('/templates/css/common.css');
+
+/* 登录页面容器 */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: calc(100vh - 100px);
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2  100%);
+  position: relative;
+  overflow: hidden;
 }
 
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+  z-index: 1;
+}
+
+/* 登录卡片 */
 .login-card {
-  width: 400px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.login-card :deep(.el-card__header) {
+/* 登录头部 */
+.login-header {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  padding: 40px 30px;
   text-align: center;
-  background: #f8f9fa;
+  color: white;
 }
 
-.login-card h2 {
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo-icon {
+  font-size: 48px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.login-header h1 {
   margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.login-header p {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+/* 登录表单 */
+.login-form {
+  padding: 40px 30px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
   color: #333;
+  margin-bottom: 5px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  font-size: 18px;
+  color: #666;
+  z-index: 1;
+}
+
+.form-input {
+  width: 100%;
+  padding: 15px 15px 15px 50px;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #ff6b6b;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.form-input::placeholder {
+  color: #999;
+  font-size: 14px;
+}
+
+/* 登录按钮 */
+.login-button {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: white !important;
+  cursor: pointer;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3) !important;
+}
+
+.login-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4) !important;
+}
+
+.login-button:active {
+  transform: translateY(0) !important;
+}
+
+/* 分割线 */
+.divider {
+  text-align: center;
+  margin: 30px 0;
+  position: relative;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e1e5e9;
+}
+
+.divider span {
+  background: white;
+  padding: 0 20px;
+  color: #666;
+  font-size: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 注册区域 */
+.register-section {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.register-section p {
+  margin: 0 0 15px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.register-link {
+  display: inline-block;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.register-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 20px 15px;
+  }
+  
+  .login-card {
+    border-radius: 15px;
+  }
+  
+  .login-header {
+    padding: 30px 20px;
+  }
+  
+  .login-form {
+    padding: 30px 20px;
+  }
+  
+  .logo-icon {
+    font-size: 36px;
+  }
+  
+  .login-header h1 {
+    font-size: 24px;
+  }
 }
 
 /* Logo样式 */
