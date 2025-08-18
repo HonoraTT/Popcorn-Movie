@@ -15,6 +15,11 @@ public class Movie implements Serializable {
     private String language;
     private String genre;
     private String castAndCrew;
+    private Double ratingScore;
+    private Integer ratingCount;
+    private String boxOffice;
+    private String synopsis;
+    private String awards;
 
     public Movie() {
         this.id = new Random().nextInt();
@@ -109,5 +114,45 @@ public class Movie implements Serializable {
 
     public void setCastAndCrew(String castAndCrew) {
         this.castAndCrew = castAndCrew;
+    }
+
+    public Double getRatingScore() {
+        return ratingScore;
+    }
+
+    public void setRatingScore(Double ratingScore) {
+        this.ratingScore = ratingScore;
+    }
+
+    public Integer getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
+    }
+
+    public String getBoxOffice() {
+        return boxOffice;
+    }
+
+    public void setBoxOffice(String boxOffice) {
+        this.boxOffice = boxOffice;
+    }
+
+    public String getSynopsis() {
+        return synopsis;
+    }
+
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
+    }
+
+    public String getAwards() {
+        return awards;
+    }
+
+    public void setAwards(String awards) {
+        this.awards = awards;
     }
 }

@@ -10,7 +10,7 @@
     >
       <el-menu-item index="/">
         <el-icon><Film /></el-icon>
-        <span>MovieTime</span>
+        <span>电影时光</span>
       </el-menu-item>
       
       <div class="flex-grow" />

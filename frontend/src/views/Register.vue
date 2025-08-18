@@ -15,7 +15,7 @@
             <li>
               <p>
                 <a v-if="currentUser" href="/">{{ currentUser.username }}</a>
-                <a v-else href="/login">Login</a>
+                <a v-else href="/login">登录</a>
               </p>
             </li>
             <li v-if="!currentUser" class="last"><i class="edit"> </i></li>
@@ -29,9 +29,9 @@
         <div class="register">
           <form @submit.prevent="submitForm">
             <div class="register-top-grid">
-              <h3>Personal Information</h3>
+              <h3>个人信息</h3>
               <div>
-                <span>First Name<label>*</label></span>
+                <span>名字<label>*</label></span>
                 <input 
                   v-model="form.firstName" 
                   name="firstName" 
@@ -40,11 +40,11 @@
                   :class="{ 'error': errors.firstName }"
                 />
                 <span class="invalid_box" :style="{ visibility: errors.firstName ? 'visible' : 'hidden' }">
-                  Invalid first name
+                  无效的名字
                 </span>
               </div>
               <div>
-                <span>Last Name<label>*</label></span>
+                <span>姓氏<label>*</label></span>
                 <input 
                   v-model="form.lastName" 
                   name="lastName" 
@@ -53,11 +53,11 @@
                   :class="{ 'error': errors.lastName }"
                 />
                 <span class="invalid_box" :style="{ visibility: errors.lastName ? 'visible' : 'hidden' }">
-                  Invalid last name
+                  无效的姓氏
                 </span>
               </div>
               <div>
-                <span>Email Address<label>*</label></span>
+                <span>邮箱地址<label>*</label></span>
                 <input 
                   v-model="form.email" 
                   name="email" 
@@ -66,21 +66,21 @@
                   :class="{ 'error': errors.email }"
                 />
                 <span class="invalid_box" :style="{ visibility: errors.email ? 'visible' : 'hidden' }">
-                  Invalid E-mail
+                  无效的邮箱
                 </span>
               </div>
               <div class="clearfix"> </div>
               <a class="news-letter" href="#">
                 <label class="checkbox">
                   <input type="checkbox" v-model="form.newsletter" />
-                  <i> </i>Sign Up for Newsletter
+                  <i> </i>订阅新闻通讯
                 </label>
               </a>
             </div>
             <div class="register-bottom-grid">
-              <h3>Login Information</h3>
+              <h3>登录信息</h3>
               <div>
-                <span>Password<label>*</label></span>
+                <span>密码<label>*</label></span>
                 <input 
                   v-model="form.password" 
                   name="password" 
@@ -89,11 +89,11 @@
                   :class="{ 'error': errors.password }"
                 />
                 <span class="invalid_box" :style="{ visibility: errors.password ? 'visible' : 'hidden' }">
-                  Password must be at least 6 characters
+                  密码至少需要6个字符
                 </span>
               </div>
               <div>
-                <span>Confirm Password<label>*</label></span>
+                <span>确认密码<label>*</label></span>
                 <input 
                   v-model="form.confirmPassword" 
                   name="confirmPassword" 
@@ -102,14 +102,14 @@
                   :class="{ 'error': errors.confirmPassword }"
                 />
                 <span class="invalid_box" :style="{ visibility: errors.confirmPassword ? 'visible' : 'hidden' }">
-                  Password not match
+                  密码不匹配
                 </span>
               </div>
               <div class="clearfix"> </div>
             </div>
             <div class="clearfix"> </div>
             <div class="register-but">
-              <input type="submit" value="submit" :disabled="loading" />
+              <input type="submit" value="提交" :disabled="loading" />
               <div class="clearfix"> </div>
             </div>
           </form>

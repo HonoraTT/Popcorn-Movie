@@ -17,7 +17,7 @@
               <li>
                 <p>
                   <router-link v-if="username" to="/">{{ username }}</router-link>
-                  <router-link v-else to="/login">Login</router-link>
+                  <router-link v-else to="/login">登录</router-link>
                 </p>
               </li>
               <li v-if="!username" class="last"><i class="edit"></i></li>
@@ -30,25 +30,25 @@
         <div class="content">
           <div class="register">
             <div class="col-md-6 login-left">
-              <h3>New Customers</h3>
-              <p>By creating an account with our store, you will be able to move through the checkout process faster, store multiple shipping addresses, view and track your orders in your account and more.</p>
-              <router-link class="acount-btn" to="/register">Create an Account</router-link>
+              <h3>新用户</h3>
+              <p>通过在我们的商店创建账户，您将能够更快地完成结账流程，存储多个送货地址，在您的账户中查看和跟踪订单等。</p>
+              <router-link class="acount-btn" to="/register">创建账户</router-link>
             </div>
             
             <div class="col-md-6 login-right">
-              <h3>Registered Customers</h3>
-              <p>If you have an account with us, please log in.</p>
+              <h3>已注册用户</h3>
+              <p>如果您在我们这里已有账户，请登录。</p>
               <el-form 
                 ref="loginFormRef" 
                 :model="loginForm" 
                 :rules="rules"
   >
                 <div>
-                  <span>Email Address<label>*</label></span>
+                  <span>邮箱地址<label>*</label></span>
                   <input v-model="loginForm.email" name="email" type="text" />
                 </div>
                 <div>
-                  <span>Password<label>*</label></span>
+                  <span>密码<label>*</label></span>
                   <input v-model="loginForm.password" name="password" type="password"/>
                 </div>
                 <el-button 

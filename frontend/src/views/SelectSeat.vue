@@ -27,7 +27,7 @@
                 <a v-if="currentUser" href="#" @click="handleLogout">
                   <img src="/templates/images/others/logout.png" style="width:20px; margin-left: 3px; height:25px;"/>
                 </a>
-                <a v-else href="/login">Login</a>
+                <a v-else href="/login">登录</a>
               </p>
             </li>
             <li v-if="!currentUser" class="last"><i class="edit"> </i></li>
@@ -42,32 +42,32 @@
           <div class="demo">
             <!-- 座位图 -->
             <div id="seat-map">
-              <div class="front">SCREEN</div>
+              <div class="front">银幕</div>
             </div>
             
             <!-- 预订详情 -->
             <div class="booking-details">
               <ul class="book-left">
-                <li>Movie </li>
-                <li>Time </li>
-                <li>Tickets</li>
-                <li>Total</li>
-                <li>Seats :</li>
+                <li>电影</li>
+                <li>时间</li>
+                <li>票数</li>
+                <li>总计</li>
+                <li>座位：</li>
               </ul>
               <ul class="book-right">
                 <li>{{ movieName }}</li>
                 <li>{{ showTime }}</li>
                 <li><span id="counter">{{ selectedSeats.length }}</span></li>
-                <li><b><i>$</i><span id="total">{{ totalPrice }}</span></b></li>
+                <li><b><i>¥</i><span id="total">{{ totalPrice }}</span></b></li>
               </ul>
               <div class="clear"></div>
               <ul id="selected-seats" class="scrollbar scrollbar1">
                 <li v-for="seat in selectedSeats" :key="`${seat.row}-${seat.col}`">
-                  Row{{ seat.row }} Seat{{ seat.col }}
+                  第{{ seat.row }}排 {{ seat.col }}号
                 </li>
               </ul>
 
-              <button class="checkout-button" @click="bookSeats">Book Now</button>
+              <button class="checkout-button" @click="bookSeats">立即预订</button>
               <div id="legend"></div>
             </div>
             <div style="clear:both"></div>
@@ -98,7 +98,7 @@
         <section>
           <div class="modal-body">
             <img class="center" style="width: 30%; height: 30%;" src="/templates/images/selectSeat/cross.png"/>
-            <h1 class="bigFont center" style="text-align: center">You have not selected any seats</h1>
+            <h1 class="bigFont center" style="text-align: center">您还没有选择任何座位</h1>
           </div>
         </section>
       </div>
@@ -146,7 +146,7 @@ export default {
         if (response.movieName) {
           movieName.value = response.movieName
         } else {
-          movieName.value = 'Movie Name'
+          movieName.value = '电影名称'
         }
         
         if (response.showTime) {
@@ -189,9 +189,9 @@ export default {
             legend: {
               node: $('#legend'),
               items: [
-                ['a', 'available', 'Available'],
-                ['a', 'unavailable', 'Sold'],
-                ['a', 'selected', 'Selected']
+                ['a', 'available', '可选'],
+                ['a', 'unavailable', '已售'],
+                ['a', 'selected', '已选']
               ]
             },
             click: function () {

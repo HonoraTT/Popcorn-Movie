@@ -30,22 +30,27 @@ CREATE TABLE `movie` (
   `language` varchar(255) DEFAULT NULL,
   `genre` varchar(255) DEFAULT NULL,
   `cast_and_crew` varchar(255) DEFAULT NULL,
+  `rating_score` decimal(3,1) DEFAULT NULL,
+  `rating_count` int(11) DEFAULT NULL,
+  `box_office` varchar(100) DEFAULT NULL,
+  `synopsis` text,
+  `awards` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of movie
 -- ----------------------------
-INSERT INTO `movie` VALUES ('1', 'The Matrix', '/images/The Matrix.jpg', '/images/The MatrixB.jpg', '1995-01-01', '3 hour', 'Apple', 'English', 'SciFic', 'StarA');
-INSERT INTO `movie` VALUES ('2', 'The Hobbit', '/images/The Hobbit.jpg', '/images/The HobbitB.jpg', '2006-05-01', '4 hour', 'SonPie', 'English', 'Fantasy', 'StarHB');
-INSERT INTO `movie` VALUES ('3', 'Lord of the rings', '/images/Lord of the rings.jpg', '/images/Lord of the ringsB.jpg', '2001-01-17', '4 hour', 'Pie', 'English', 'Fantasy', 'StarH');
-INSERT INTO `movie` VALUES ('4', 'Pirates of the Caribbean', '/images/Pirates of the Caribbean.jpg', null, '1996-01-01', '3 hour', 'Banana', 'English', 'Fantasy', 'StarS');
-INSERT INTO `movie` VALUES ('5', 'Chibi', '/images/Chibi.jpg', null, '2008-08-08', '2 hour', 'Chi', 'Chinese', 'History', 'StarCH');
-INSERT INTO `movie` VALUES ('6', 'Kingsman', '/images/Kingsman.jpg', null, '2009-09-03', '3 hour', 'Eg', 'English', 'Action', 'StarEg');
-INSERT INTO `movie` VALUES ('7', 'High School Musical', '/images/High School Musical.jpg', null, '2010-05-02', '3 hour', 'Am', 'English', 'Music', 'StarStu');
-INSERT INTO `movie` VALUES ('8', 'Conan', '/images/Conan.jpg', null, '2017-07-07', '2 hour', 'AoYama', 'Japanese', 'Comic', 'Conan');
-INSERT INTO `movie` VALUES ('9', 'Dead Game', '/images/Dead Game.jpg', null, '1977-07-05', '2 hour', 'Buruse Li', 'English', 'Action', 'Buruse Li');
-INSERT INTO `movie` VALUES ('10', 'Doraemon', '/images/Doraemon.jpg', null, '2013-06-12', '2 hour', 'Oda', 'Japanese', 'Comic', 'StarJP');
+/INSERT INTO `movie` VALUES ('1', 'The Matrix', '/images/The Matrix.jpg', '/images/The MatrixB.jpg', '1995-01-01', '3 hour', 'Apple', 'English', 'SciFic', 'StarA', 9.8, 125430, '4.63亿', '在未来的世界里，人类被机器统治，生活在一个虚拟的矩阵中。尼奥（基努·里维斯饰）发现自己可能是救世主，能够拯救人类。', '奥斯卡最佳视觉效果奖、最佳音效剪辑奖');
+INSERT INTO `movie` VALUES ('2', 'The Hobbit', '/images/The Hobbit.jpg', '/images/The HobbitB.jpg', '2006-05-01', '4 hour', 'SonPie', 'English', 'Fantasy', 'StarHB', 8.9, 98765, '3.21亿', '比尔博·巴金斯（马丁·弗里曼饰）被巫师甘道夫选中，加入矮人队伍前往孤山，夺回被恶龙史矛革占据的矮人王国。', '奥斯卡最佳视觉效果奖提名');
+INSERT INTO `movie` VALUES ('3', 'Lord of the rings', '/images/Lord of the rings.jpg', '/images/Lord of the ringsB.jpg', '2001-01-17', '4 hour', 'Pie', 'English', 'Fantasy', 'StarH', 9.2, 156789, '5.12亿', '佛罗多·巴金斯（伊利亚·伍德饰）继承了魔戒，必须前往魔多销毁它，拯救中土世界免于黑暗势力的统治。', '奥斯卡最佳影片奖、最佳导演奖、最佳改编剧本奖');
+INSERT INTO `movie` VALUES ('4', 'Pirates of the Caribbean', '/images/Pirates of the Caribbean.jpg', null, '1996-01-01', '3 hour', 'Banana', 'English', 'Fantasy', 'StarS', 8.7, 87654, '2.89亿', '杰克·斯派洛船长（约翰尼·德普饰）与威尔·特纳（奥兰多·布鲁姆饰）和伊丽莎白·斯旺（凯拉·奈特莉饰）一起寻找被诅咒的阿兹特克金币。', '奥斯卡最佳男主角提名');
+INSERT INTO `movie` VALUES ('5', 'Chibi', '/images/Chibi.jpg', null, '2008-08-08', '2 hour', 'Chi', 'Chinese', 'History', 'StarCH', 8.5, 65432, '1.56亿', '讲述了中国历史上著名的赤壁之战，曹操率领大军南下，刘备和孙权联合抗曹，最终在赤壁取得胜利。', '金鸡奖最佳影片提名');
+INSERT INTO `movie` VALUES ('6', 'Kingsman', '/images/Kingsman.jpg', null, '2009-09-03', '3 hour', 'Eg', 'English', 'Action', 'StarEg', 8.3, 54321, '1.23亿', '艾格西（塔伦·埃格顿饰）被招募加入秘密特工组织Kingsman，接受训练成为超级特工，阻止邪恶势力的阴谋。', '英国电影学院奖最佳英国电影提名');
+INSERT INTO `movie` VALUES ('7', 'High School Musical', '/images/High School Musical.jpg', null, '2010-05-02', '3 hour', 'Am', 'English', 'Music', 'StarStu', 7.8, 43210, '0.89亿', '特洛伊（扎克·埃夫隆饰）和加布里埃拉（瓦妮莎·哈金斯饰）在高中相遇，通过音乐剧发现了彼此的才华和爱情。', '青少年选择奖最佳音乐电影');
+INSERT INTO `movie` VALUES ('8', 'Conan', '/images/Conan.jpg', null, '2017-07-07', '2 hour', 'AoYama', 'Japanese', 'Comic', 'Conan', 9.1, 76543, '2.34亿', '工藤新一（柯南）被神秘组织变小，以小学生身份继续破案，与毛利兰和小五郎一起解决各种悬疑案件。', '日本电影学院奖最佳动画电影');
+INSERT INTO `movie` VALUES ('9', 'Dead Game', '/images/Dead Game.jpg', null, '1977-07-05', '2 hour', 'Buruse Li', 'English', 'Action', 'Buruse Li', 8.6, 34567, '1.78亿', '李小龙饰演的武术大师在游戏中与各种对手较量，展现了中国功夫的精髓和武术哲学。', '香港电影金像奖最佳动作设计');
+INSERT INTO `movie` VALUES ('10', 'Doraemon', '/images/Doraemon.jpg', null, '2013-06-12', '2 hour', 'Oda', 'Japanese', 'Comic', 'StarJP', 8.4, 56789, '1.45亿', '哆啦A梦从22世纪来到大雄身边，用各种神奇道具帮助大雄解决生活中的困难，成为他最好的朋友。', '日本电影学院奖最佳动画电影提名');
 
 -- ----------------------------
 -- Table structure for seat
@@ -2044,10 +2049,10 @@ CREATE TABLE `tag` (
 -- ----------------------------
 -- Records of tag
 -- ----------------------------
-INSERT INTO `tag` VALUES ('1', 'Featured');
-INSERT INTO `tag` VALUES ('2', 'Top Viewed');
-INSERT INTO `tag` VALUES ('3', 'Top Rating');
-INSERT INTO `tag` VALUES ('4', 'Recently Added');
+INSERT INTO `tag` VALUES ('1', '精选');
+INSERT INTO `tag` VALUES ('2', '热门');
+INSERT INTO `tag` VALUES ('3', '高分');
+INSERT INTO `tag` VALUES ('4', '最新');
 
 -- ----------------------------
 -- Table structure for tag_movie
