@@ -41,16 +41,16 @@ CREATE TABLE `movie` (
 -- ----------------------------
 -- Records of movie
 -- ----------------------------
-/INSERT INTO `movie` VALUES ('1', 'The Matrix', '/images/The Matrix.jpg', '/images/The MatrixB.jpg', '1995-01-01', '3 hour', 'Apple', 'English', 'SciFic', 'StarA', 9.8, 125430, '4.63亿', '在未来的世界里，人类被机器统治，生活在一个虚拟的矩阵中。尼奥（基努·里维斯饰）发现自己可能是救世主，能够拯救人类。', '奥斯卡最佳视觉效果奖、最佳音效剪辑奖');
-INSERT INTO `movie` VALUES ('2', 'The Hobbit', '/images/The Hobbit.jpg', '/images/The HobbitB.jpg', '2006-05-01', '4 hour', 'SonPie', 'English', 'Fantasy', 'StarHB', 8.9, 98765, '3.21亿', '比尔博·巴金斯（马丁·弗里曼饰）被巫师甘道夫选中，加入矮人队伍前往孤山，夺回被恶龙史矛革占据的矮人王国。', '奥斯卡最佳视觉效果奖提名');
-INSERT INTO `movie` VALUES ('3', 'Lord of the rings', '/images/Lord of the rings.jpg', '/images/Lord of the ringsB.jpg', '2001-01-17', '4 hour', 'Pie', 'English', 'Fantasy', 'StarH', 9.2, 156789, '5.12亿', '佛罗多·巴金斯（伊利亚·伍德饰）继承了魔戒，必须前往魔多销毁它，拯救中土世界免于黑暗势力的统治。', '奥斯卡最佳影片奖、最佳导演奖、最佳改编剧本奖');
-INSERT INTO `movie` VALUES ('4', 'Pirates of the Caribbean', '/images/Pirates of the Caribbean.jpg', null, '1996-01-01', '3 hour', 'Banana', 'English', 'Fantasy', 'StarS', 8.7, 87654, '2.89亿', '杰克·斯派洛船长（约翰尼·德普饰）与威尔·特纳（奥兰多·布鲁姆饰）和伊丽莎白·斯旺（凯拉·奈特莉饰）一起寻找被诅咒的阿兹特克金币。', '奥斯卡最佳男主角提名');
-INSERT INTO `movie` VALUES ('5', 'Chibi', '/images/Chibi.jpg', null, '2008-08-08', '2 hour', 'Chi', 'Chinese', 'History', 'StarCH', 8.5, 65432, '1.56亿', '讲述了中国历史上著名的赤壁之战，曹操率领大军南下，刘备和孙权联合抗曹，最终在赤壁取得胜利。', '金鸡奖最佳影片提名');
-INSERT INTO `movie` VALUES ('6', 'Kingsman', '/images/Kingsman.jpg', null, '2009-09-03', '3 hour', 'Eg', 'English', 'Action', 'StarEg', 8.3, 54321, '1.23亿', '艾格西（塔伦·埃格顿饰）被招募加入秘密特工组织Kingsman，接受训练成为超级特工，阻止邪恶势力的阴谋。', '英国电影学院奖最佳英国电影提名');
-INSERT INTO `movie` VALUES ('7', 'High School Musical', '/images/High School Musical.jpg', null, '2010-05-02', '3 hour', 'Am', 'English', 'Music', 'StarStu', 7.8, 43210, '0.89亿', '特洛伊（扎克·埃夫隆饰）和加布里埃拉（瓦妮莎·哈金斯饰）在高中相遇，通过音乐剧发现了彼此的才华和爱情。', '青少年选择奖最佳音乐电影');
-INSERT INTO `movie` VALUES ('8', 'Conan', '/images/Conan.jpg', null, '2017-07-07', '2 hour', 'AoYama', 'Japanese', 'Comic', 'Conan', 9.1, 76543, '2.34亿', '工藤新一（柯南）被神秘组织变小，以小学生身份继续破案，与毛利兰和小五郎一起解决各种悬疑案件。', '日本电影学院奖最佳动画电影');
-INSERT INTO `movie` VALUES ('9', 'Dead Game', '/images/Dead Game.jpg', null, '1977-07-05', '2 hour', 'Buruse Li', 'English', 'Action', 'Buruse Li', 8.6, 34567, '1.78亿', '李小龙饰演的武术大师在游戏中与各种对手较量，展现了中国功夫的精髓和武术哲学。', '香港电影金像奖最佳动作设计');
-INSERT INTO `movie` VALUES ('10', 'Doraemon', '/images/Doraemon.jpg', null, '2013-06-12', '2 hour', 'Oda', 'Japanese', 'Comic', 'StarJP', 8.4, 56789, '1.45亿', '哆啦A梦从22世纪来到大雄身边，用各种神奇道具帮助大雄解决生活中的困难，成为他最好的朋友。', '日本电影学院奖最佳动画电影提名');
+/INSERT INTO `movie` VALUES ('1', '黑客帝国', '/images/The Matrix.jpg', '/images/The MatrixB.jpg', '2000-01-14', '3 hour', '莉莉·沃卓斯基', '英语', '动作', '基努·李维斯等', 9.8, 125430, '4.63亿', '在未来的世界里，人类被机器统治，生活在一个虚拟的矩阵中。尼奥（基努·里维斯饰）发现自己可能是救世主，能够拯救人类。', '奥斯卡最佳视觉效果奖、最佳音效剪辑奖');
+INSERT INTO `movie` VALUES ('2', '霍比特人：意外之旅', '/images/The Hobbit.jpg', '/images/The HobbitB.jpg', '2006-05-01', '4 hour', '彼得·杰克逊', '英语', '冒险', '弗兰·威尔士等', 8.9, 98765, '3.21亿', '比尔博·巴金斯（马丁·弗里曼饰）被巫师甘道夫选中，加入矮人队伍前往孤山，夺回被恶龙史矛革占据的矮人王国。', '奥斯卡最佳视觉效果奖提名');
+INSERT INTO `movie` VALUES ('3', '指环王：护戒使者', '/images/Lord of the rings.jpg', '/images/Lord of the ringsB.jpg', '2001-01-17', '4 hour', '彼得·杰克逊', '英语', '剧情', '伊利亚·伍德等', 9.2, 156789, '5.12亿', '佛罗多·巴金斯（伊利亚·伍德饰）继承了魔戒，必须前往魔多销毁它，拯救中土世界免于黑暗势力的统治。', '奥斯卡最佳影片奖、最佳导演奖、最佳改编剧本奖');
+INSERT INTO `movie` VALUES ('4', '加勒比海盗：黑珍珠号诅咒', '/images/Pirates of the Caribbean.jpg', null, '1996-01-01', '3 hour', '戈尔·维宾斯基', '英语', '动作', '约翰尼·德普等', 8.7, 87654, '2.89亿', '杰克·斯派洛船长（约翰尼·德普饰）与威尔·特纳（奥兰多·布鲁姆饰）和伊丽莎白·斯旺（凯拉·奈特莉饰）一起寻找被诅咒的阿兹特克金币。', '奥斯卡最佳男主角提名');
+INSERT INTO `movie` VALUES ('5', '罗小黑战记2', '/images/The Legend of Hei.jpg', null, '2025-07-18', '2 hour', '木头', '日语', '动画', '山新/刘明月等', 8.5, 65432, '1.56亿', '小黑跟随师父在小镇上过着安宁日子，分会馆遇袭，打破了妖精世界维系多年的和平，来自妖灵会馆的“全新任务”也让两人陷入分离危机，更让师父无限的处境发生翻天覆地的变化。', '金鸡奖最佳美术片提名');
+INSERT INTO `movie` VALUES ('6', '星际穿越', '/images/Interstellar.jpg', null, '2014-11-12', '3 hour', '克里斯托弗·诺兰', '英语', '科幻', '马修·麦康纳等', 8.3, 54321, '1.23亿', '一名宇航员穿越虫洞为人类寻找新家园，却在时空扭曲中与女儿展开跨越维度的亲情救赎。', '奥斯卡最佳视觉效果奖');
+INSERT INTO `movie` VALUES ('7', '南京照相馆', '/images/Dead to Rights.jpg', null, '2025-07-25', '3 hour', '申奥', '普通话', '历史', '刘昊然/王传君等', 7.8, 43210, '0.89亿', '一群生活在南京的百姓躲在吉祥照相馆中避难，他们被迫帮助日军摄影师冲洗底片，却意外冲印出了能证明日军屠城的罪证照片。', '青少年选择奖最佳电影');
+INSERT INTO `movie` VALUES ('8', '寻梦环游记', '/images/Coco.jpg', null, '2017-11-24', '2 hour', '李·昂克里奇', '英语', '音乐', '安东尼·冈萨雷斯/盖尔·加西亚·贝纳尔等', 9.1, 76543, '2.34亿', '热爱音乐的墨西哥男孩闯入亡灵世界，揭开家族禁忌真相，领悟“遗忘才是终极死亡”的真谛。', '奥斯卡最佳动画长片奖');
+INSERT INTO `movie` VALUES ('9', '沙丘2', '/images/Dune.jpg', null, '2024-03-08', '2 hour', '丹尼斯·维伦纽瓦', '英语', '剧情', '提莫西·查拉梅/赞达亚等', 8.6, 34567, '1.78亿', '保罗·厄崔迪在沙漠星球崛起为救世主，却陷入权力、预言与战争的漩涡，直面命运的残酷抉择。', '奥斯卡最佳影片提名、英国电影学院奖最佳导演提名');
+INSERT INTO `movie` VALUES ('10', '你想活出怎样的人生', '/images/The Boy and the Heron.jpg', null, '2024-04-03', '2 hour', '宫崎骏', '日语', '动画', '山时聪真等', 8.4, 56789, '1.45亿', '少年在奇幻异世界邂逅神秘生灵，通过成长与告别探寻生命的意义与自我的价值。', '奥斯卡最佳动画长片奖');
 
 -- ----------------------------
 -- Table structure for seat
