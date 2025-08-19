@@ -11,16 +11,20 @@
           <div class="col-sm-4 nav"></div>
           <div class="col-sm-4 header_right">
             <ul class="header_right_box">
-              <li>
-                <img v-if="username" :src="userIconPath" alt="User Icon" class="user-avatar"/>
+              <li v-if="currentUser">
+                <UserDropdown />
               </li>
-              <li>
+              <li v-if="currentUser">
                 <p class="user-info">
-                  <router-link v-if="username" to="/">{{ username }}</router-link>
-                  <router-link v-else to="/login">登录</router-link>
+                  <router-link to="/" style="cursor:default;">{{ currentUser.username }}</router-link>
                 </p>
               </li>
-              <li v-if="!username" class="last"><i class="edit"></i></li>
+              <li v-else>
+                <p class="user-info">
+                  <router-link to="/login">登录</router-link>
+                </p>
+              </li>
+              <li v-if="!currentUser" class="last"><i class="edit"></i></li>
               <div class="clearfix"></div>
             </ul>
           </div>
@@ -104,18 +108,24 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import UserDropdown from '@/components/UserDropdown.vue'
 
 export default {
   name: 'Login',
+  components: {
+    UserDropdown
+  },
   setup() {
     const store = useStore()
     const router = useRouter()
     const loginFormRef = ref(null)
     const loading = ref(false)
+    
+    const currentUser = computed(() => store.getters.currentUser)
     
     // 表单数据
     const loginForm = reactive({

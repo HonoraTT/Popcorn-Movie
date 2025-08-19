@@ -11,16 +11,17 @@
         <div class="col-sm-4 nav"></div>
         <div class="col-sm-4 header_right">
           <ul class="header_right_box">
-            <li>
-              <img v-if="currentUser" :src="currentUser.iconPath || '/templates/images/user_icon/p1.png'" alt="icon" class="user-avatar"/>
+            <li v-if="currentUser">
+              <UserDropdown />
             </li>
-            <li>
+            <li v-if="currentUser">
               <p class="user-info">
-                <a v-if="currentUser" style="cursor:default;" href="/">{{ currentUser.username }}</a>
-                <a v-if="currentUser" href="#" @click="handleLogout">
-                  <img src="/templates/images/others/logout.png" style="width:20px; margin-left: 3px; height:25px;"/>
-                </a>
-                <a v-else href="/login">登录</a>
+                <a style="cursor:default;" href="/">{{ currentUser.username }}</a>
+              </p>
+            </li>
+            <li v-else>
+              <p class="user-info">
+                <a href="/login">登录</a>
               </p>
             </li>
             <li v-if="!currentUser" class="last"><i class="edit"> </i></li>
@@ -122,9 +123,13 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { getBanners, getTags, getMoviesByTag } from '@/api/movie'
 import { ElMessage } from 'element-plus'
+import UserDropdown from '@/components/UserDropdown.vue'
 
 export default {
   name: 'Home',
+  components: {
+    UserDropdown
+  },
   setup() {
     const store = useStore()
     const router = useRouter()
