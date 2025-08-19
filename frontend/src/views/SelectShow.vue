@@ -8,25 +8,20 @@
         </router-link>
       </div>
       <div class="col-sm-4 nav"></div>
-      <div class="col-sm-4 header_right">
-        <ul class="header_right_box">
-          <li>
-            <img v-if="currentUser" :src="currentUser.iconPath || '/templates/images/user_icon/p1.png'" alt="icon" class="user-avatar"/>
-          </li>
-          <li>
-            <p class="user-info">
-              <router-link v-if="currentUser" to="/" style="cursor:default;">{{ currentUser.username }}</router-link>
-              <router-link v-if="currentUser" to="/logout">
-                <img src="/templates/images/others/logout.png" 
-                     style="width:20px; margin-left: 3px; height:25px;"/>
-              </router-link>
-              <router-link v-else to="/login">登录</router-link>
-            </p>
-          </li>
-          <li v-if="!currentUser" class="last"><i class="edit"></i></li>
-          <div class="clearfix"></div>
-        </ul>
-      </div>
+              <div class="col-sm-4 header_right">
+          <ul class="header_right_box">
+            <li v-if="currentUser">
+              <UserDropdown />
+            </li>
+            <li v-else>
+              <p class="user-info">
+                <router-link to="/login">登录</router-link>
+              </p>
+            </li>
+            <li v-if="!currentUser" class="last"><i class="edit"></i></li>
+            <div class="clearfix"></div>
+          </ul>
+        </div>
       <div class="clearfix"></div>
     </div>
 
@@ -58,9 +53,9 @@
           </div>
           
           <div class="action-buttons">
-            <button class="btn-want-watch">
-              <i class="heart-icon">♥</i>
-              想看
+            <button class="btn-want-watch" @click="addToWishlist" :class="{ 'active': isInWishlist }">
+              <i class="heart-icon">{{ isInWishlist ? '♥' : '♡' }}</i>
+              {{ isInWishlist ? '已想看' : '想看' }}
             </button>
           </div>
           
@@ -249,9 +244,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { getMovieById } from '@/api/movie'
 import { getShowsByMovie } from '@/api/booking'
 import { ElMessage } from 'element-plus'
+import UserDropdown from '@/components/UserDropdown.vue'
+import { addToWishlist, removeFromWishlist, getUserWishlist } from '@/api/user'
 
 export default {
   name: 'SelectShow',
+  components: {
+    UserDropdown
+  },
   setup() {
     const store = useStore()
     const route = useRoute()
@@ -269,6 +269,7 @@ export default {
     const selectedDistrict = ref('全部')
     const selectedHallType = ref('全部')
     const selectedService = ref('全部')
+    const isInWishlist = ref(false)
 
     const getImageUrl = (path) => {
       if (!path) return ''
@@ -435,11 +436,60 @@ export default {
           movie: movie.value,
           theaterList: theaterList.value
         })
+        
+        // 检查是否已在想看片单中
+        await checkWishlistStatus()
       } catch (error) {
         console.error('加载数据失败:', error)
         ElMessage.error('加载电影信息失败，请稍后重试')
       } finally {
         loading.value = false
+      }
+    }
+
+    // 检查电影是否已在想看片单中
+    const checkWishlistStatus = async () => {
+      if (!currentUser.value?.id) return
+      
+      try {
+        const response = await getUserWishlist(currentUser.value.id)
+        if (response.success && response.data) {
+          const wishlist = response.data
+          // 使用movieId进行比较，而不是id
+          isInWishlist.value = wishlist.some(item => item.movieId === movie.value.id)
+        }
+      } catch (error) {
+        console.warn('检查想看状态失败:', error)
+      }
+    }
+
+    // 添加到想看片单
+    const handleWishlistToggle = async () => {
+      if (!currentUser.value?.id) {
+        ElMessage.warning('请先登录')
+        router.push('/login')
+        return
+      }
+
+      try {
+        if (isInWishlist.value) {
+          // 从想看片单移除
+          await removeFromWishlist(currentUser.value.id, movie.value.id)
+          isInWishlist.value = false
+          ElMessage.success('已从想看片单移除')
+        } else {
+          // 添加到想看片单
+          await addToWishlist(currentUser.value.id, movie.value.id)
+          isInWishlist.value = true
+          ElMessage.success('已添加到想看片单')
+        }
+        
+        // 触发全局事件，通知其他组件更新想看片单
+        console.log('触发想看片单更新事件')
+        window.dispatchEvent(new CustomEvent('wishlist-updated'))
+      } catch (error) {
+        console.error('操作想看片单失败:', error)
+        ElMessage.error('操作失败，请重试')
       }
     }
 
@@ -555,8 +605,10 @@ export default {
       selectedDistrict,
       selectedHallType,
       selectedService,
+      isInWishlist,
       selectDate,
       selectFilter,
+      addToWishlist: handleWishlistToggle,
       handleLogout,
       getImageUrl,
       getCinemaDisplayName,
@@ -693,6 +745,15 @@ export default {
 .btn-want-watch:hover {
   background: #ff3742;
   transform: translateY(-2px);
+}
+
+.btn-want-watch.active {
+  background: #ff6b6b;
+  color: white;
+}
+
+.btn-want-watch.active:hover {
+  background: #ff5252;
 }
 
 .heart-icon {

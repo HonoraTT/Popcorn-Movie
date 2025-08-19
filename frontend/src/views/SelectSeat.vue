@@ -20,16 +20,17 @@
         </div>
         <div class="col-sm-4 header_right">
           <ul class="header_right_box">
-            <li>
-              <img v-if="currentUser" :src="currentUser.iconPath || '/templates/images/user_icon/p1.png'" alt="icon" class="user-avatar"/>
+            <li v-if="currentUser">
+              <UserDropdown />
             </li>
-            <li>
+            <li v-if="currentUser">
               <p class="user-info">
-                <a v-if="currentUser" style="cursor:default;" href="/">{{ currentUser.username }}</a>
-                <a v-if="currentUser" href="#" @click="handleLogout">
-                  <img src="/templates/images/others/logout.png" style="width:20px; margin-left: 3px; height:25px;"/>
-                </a>
-                <a v-else href="/login">登录</a>
+                <a style="cursor:default;" href="/">{{ currentUser.username }}</a>
+              </p>
+            </li>
+            <li v-else>
+              <p class="user-info">
+                <a href="/login">登录</a>
               </p>
             </li>
             <li v-if="!currentUser" class="last"><i class="edit"> </i></li>
@@ -49,32 +50,15 @@
             
             <!-- 预订详情 -->
             <div class="booking-details">
-              <!-- <ul class="book-left">
-                <li>电影</li>
-                <li>时间</li>
-                <li>票数</li>
-                <li>总计</li>
-                <li>座位：</li>
-              </ul> -->
               <ul class="book-right">
                 <li class="name">{{ movieName }}</li>
                 <li>
                   <span>{{ showTime }} {{ duration }} {{ language }}</span>
                 </li>
-                <!-- <li><span id="counter">{{ selectedSeats.length }}</span></li> -->
-                <!-- <li><b><i>¥</i><span id="total">{{ totalPrice }}</span></b></li> -->
               </ul>
               <div class="clear"></div>
-              <!-- <ul id="selected-seats" class="scrollbar scrollbar1">
-                <li v-for="seat in selectedSeats" :key="`${seat.row}-${seat.col}`">
-                    {{ seat.row }}排 {{ seat.col }}号
-                    <span>新人价{{ price }}</span>
-                </li>
-              </ul> -->
               <ul id="selected-seats" class="selected-seats-wrapper">
                 <li v-for="seat in selectedSeats" :key="`${seat.row}-${seat.col}`" class="selected-seat-item">
-                  
-                  <!-- 座位信息放在右侧 -->
                   <div class="info">
                     <div class="seat-info">
                       {{ seat.row }}排{{ seat.col }}号
@@ -83,7 +67,6 @@
                       新人价¥{{ price }}
                     </div>
                   </div>
-                  <!-- 关闭按钮放在最左侧 -->
                   <div class="close-icon" @click="removeSeat(seat)">×</div>
                 </li>
               </ul>
@@ -136,9 +119,13 @@ import { useRouter, useRoute } from 'vue-router'
 import { getSeatMap, bookSeats as bookSeatsApi } from '@/api/booking'
 import { ElMessage } from 'element-plus'
 import { getMovieById } from '@/api/movie'
+import UserDropdown from '@/components/UserDropdown.vue'
 
 export default {
   name: 'SelectSeat',
+  components: {
+    UserDropdown
+  },
   setup() {
     const store = useStore()
     const router = useRouter()
@@ -168,15 +155,12 @@ export default {
     })
     
     const removeSeat = (seatToRemove) => {
-      // 1. 从选中列表中移除座位
       const initialLength = selectedSeats.value.length
       selectedSeats.value = selectedSeats.value.filter(
         (seat) => seat.row !== seatToRemove.row || seat.col !== seatToRemove.col
       );
       
-      // 2. 只有当确实移除了座位时才更新座位图状态
       if (selectedSeats.value.length < initialLength && seatChart.value) {
-        // 使用预存的ID映射关系查找座位
         const seatKey = `${seatToRemove.row}-${seatToRemove.col}`;
         const seatId = seatIdMap.value[seatKey];
         
@@ -441,27 +425,6 @@ export default {
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-
-/* .book-left, .book-right {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: inline-block;
-  vertical-align: top;
-}
-
-.book-left li, .book-right li {
-  margin-bottom: 8px;
-}
-
-.book-left {
-  margin-right: 24px;
-}
-
-.book-left li {
-  font-weight: bold;
-  color: #333;
-} */
 
 .book-right li {
   color: #666;

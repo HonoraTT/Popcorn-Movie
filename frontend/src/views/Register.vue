@@ -9,21 +9,25 @@
           </a>
         </div>
         <div class="col-sm-4 nav"></div>
-        <div class="col-sm-4 header_right">
-          <ul class="header_right_box">
-            <li>
-              <img v-if="currentUser" :src="currentUser.iconPath || '/templates/images/user_icon/p1.png'" alt="icon" class="user-avatar"/>
-            </li>
-            <li>
-              <p class="user-info">
-                <a v-if="currentUser" href="/">{{ currentUser.username }}</a>
-                <a v-else href="/login">登录</a>
-              </p>
-            </li>
-            <li v-if="!currentUser" class="last"><i class="edit"> </i></li>
-            <div class="clearfix"> </div>
-          </ul>
-        </div>
+                                     <div class="col-sm-4 header_right">
+             <ul class="header_right_box">
+               <li v-if="currentUser">
+                 <UserDropdown />
+               </li>
+               <li v-if="currentUser">
+                 <p class="user-info">
+                   <a style="cursor:default;" href="/">{{ currentUser.username }}</a>
+                 </p>
+               </li>
+               <li v-else>
+                 <p class="user-info">
+                   <a href="/login">登录</a>
+                 </p>
+               </li>
+               <li v-if="!currentUser" class="last"><i class="edit"> </i></li>
+               <div class="clearfix"> </div>
+             </ul>
+           </div>
         <div class="clearfix"> </div>
       </div>
 
@@ -185,14 +189,22 @@
 <script>
 import { reactive, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import { ElMessage } from 'element-plus'
 import { register } from '@/api/auth'
+import UserDropdown from '@/components/UserDropdown.vue'
 
 export default {
   name: 'Register',
+  components: {
+    UserDropdown
+  },
   setup() {
     const router = useRouter()
+    const store = useStore()
     const loading = ref(false)
+    
+    const currentUser = computed(() => store.getters.currentUser)
     
     const form = reactive({
       firstName: '',
