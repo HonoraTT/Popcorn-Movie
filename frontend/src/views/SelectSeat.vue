@@ -49,27 +49,48 @@
             
             <!-- 预订详情 -->
             <div class="booking-details">
-              <ul class="book-left">
+              <!-- <ul class="book-left">
                 <li>电影</li>
                 <li>时间</li>
                 <li>票数</li>
                 <li>总计</li>
                 <li>座位：</li>
-              </ul>
+              </ul> -->
               <ul class="book-right">
-                <li>{{ movieName }}</li>
-                <li>{{ showTime }}</li>
-                <li><span id="counter">{{ selectedSeats.length }}</span></li>
-                <li><b><i>¥</i><span id="total">{{ totalPrice }}</span></b></li>
+                <li class="name">{{ movieName }}</li>
+                <li>
+                  <span>{{ showTime }} {{ duration }} {{ language }}</span>
+                </li>
+                <!-- <li><span id="counter">{{ selectedSeats.length }}</span></li> -->
+                <!-- <li><b><i>¥</i><span id="total">{{ totalPrice }}</span></b></li> -->
               </ul>
               <div class="clear"></div>
-              <ul id="selected-seats" class="scrollbar scrollbar1">
+              <!-- <ul id="selected-seats" class="scrollbar scrollbar1">
                 <li v-for="seat in selectedSeats" :key="`${seat.row}-${seat.col}`">
-                  第{{ seat.row }}排 {{ seat.col }}号
+                    {{ seat.row }}排 {{ seat.col }}号
+                    <span>新人价{{ price }}</span>
+                </li>
+              </ul> -->
+              <ul id="selected-seats" class="selected-seats-wrapper">
+                <li v-for="seat in selectedSeats" :key="`${seat.row}-${seat.col}`" class="selected-seat-item">
+                  
+                  <!-- 座位信息放在右侧 -->
+                  <div class="info">
+                    <div class="seat-info">
+                      {{ seat.row }}排{{ seat.col }}号
+                    </div>
+                    <div class="price-info">
+                      新人价¥{{ price }}
+                    </div>
+                  </div>
+                  <!-- 关闭按钮放在最左侧 -->
+                  <div class="close-icon" @click="removeSeat(seat)">×</div>
                 </li>
               </ul>
 
-              <button class="checkout-button" @click="bookSeats">立即预订</button>
+
+              <button v-if="selectedSeats.length" class="checkout-button" @click="bookSeats">{{ totalPrice }}元 立即预订</button>
+              <button v-else class="checkout-button1" @click="bookSeats">请先选座</button>
               <div id="legend"></div>
             </div>
             <div style="clear:both"></div>
@@ -114,6 +135,7 @@ import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 import { getSeatMap, bookSeats as bookSeatsApi } from '@/api/booking'
 import { ElMessage } from 'element-plus'
+import { getMovieById } from '@/api/movie'
 
 export default {
   name: 'SelectSeat',
@@ -122,10 +144,18 @@ export default {
     const router = useRouter()
     const route = useRoute()
     
+    // 座位图表实例引用
+    const seatChart = ref(null)
+    // 存储座位ID映射关系，解决索引不匹配问题
+    const seatIdMap = ref({})
+    
     const currentUser = computed(() => store.getters.currentUser)
     const showId = ref(route.params.showId)
+    const movieId = ref(route.params.movieId)
     const movieName = ref('')
     const showTime = ref('')
+    const duration = ref('')
+    const language = ref('')
     const price = ref(0)
     const selectedSeats = ref([])
     const seatMap = ref('')
@@ -136,11 +166,38 @@ export default {
     const totalPrice = computed(() => {
       return selectedSeats.value.length * price.value
     })
+    
+    const removeSeat = (seatToRemove) => {
+      // 1. 从选中列表中移除座位
+      const initialLength = selectedSeats.value.length
+      selectedSeats.value = selectedSeats.value.filter(
+        (seat) => seat.row !== seatToRemove.row || seat.col !== seatToRemove.col
+      );
+      
+      // 2. 只有当确实移除了座位时才更新座位图状态
+      if (selectedSeats.value.length < initialLength && seatChart.value) {
+        // 使用预存的ID映射关系查找座位
+        const seatKey = `${seatToRemove.row}-${seatToRemove.col}`;
+        const seatId = seatIdMap.value[seatKey];
+        
+        if (seatId) {
+          const seat = seatChart.value.get(seatId);
+          if (seat && seat.status() === 'selected') {
+            seat.status('available');
+          } else {
+            console.log('座位状态不是选中状态', seat?.status());
+          }
+        } else {
+          console.log('未找到座位ID映射', seatKey);
+        }
+      }
+    };
 
     const loadSeatData = async () => {
       try {
         loading.value = true
         const response = await getSeatMap(showId.value)
+        const response1 = await getMovieById(movieId.value)
         seatMap.value = response.seatMap
         soldSeats.value = response.soldSeats || []
         
@@ -155,6 +212,18 @@ export default {
           showTime.value = response.showTime
         } else {
           showTime.value = '2025-08-09 14:30'
+        }
+
+        if (response1.duration) {
+          duration.value = response1.duration
+        } else {
+          duration.value = '2hour'
+        }
+
+        if (response1.language) {
+          language.value = response1.language
+        } else {
+          language.value = '国语'
         }
         
         if (response.price) {
@@ -176,11 +245,11 @@ export default {
       // 等待DOM加载完成
       setTimeout(() => {
         if (typeof $ !== 'undefined' && $.fn.seatCharts) {
-          const $cart = $('#selected-seats')
-          const $counter = $('#counter')
-          const $total = $('#total')
-
-          const sc = $('#seat-map').seatCharts({
+          // 重置座位ID映射
+          seatIdMap.value = {};
+          
+          // 创建座位图并保存实例
+          seatChart.value = $('#seat-map').seatCharts({
             map: seatMap.value,
             naming: {
               top: false,
@@ -197,6 +266,10 @@ export default {
               ]
             },
             click: function () {
+              // 记录座位ID与行列的映射关系
+              const seatKey = `${this.settings.row + 1}-${this.settings.label}`;
+              seatIdMap.value[seatKey] = this.settings.id;
+              
               if (this.status() == 'available') {
                 const seat = {
                   showId: showId.value,
@@ -208,10 +281,8 @@ export default {
                 return 'selected'
               } else if (this.status() == 'selected') {
                 const seat = {
-                  showId: showId.value,
                   row: this.settings.row + 1,
                   col: this.settings.label,
-                  isBooked: true
                 }
                 const index = selectedSeats.value.findIndex(s => s.row === seat.row && s.col === seat.col)
                 if (index > -1) {
@@ -228,12 +299,19 @@ export default {
 
           // 设置已售座位
           if (soldSeats.value.length > 0) {
-            sc.get(soldSeats.value).status('unavailable')
+            seatChart.value.get(soldSeats.value).status('unavailable')
           }
+          
+          // 初始化时建立所有座位的ID映射
+          seatChart.value.each(function() {
+            const seatKey = `${this.settings.row + 1}-${this.settings.label}`;
+            seatIdMap.value[seatKey] = this.settings.id;
+          });
         }
       }, 100)
     }
 
+    // 其他方法保持不变...
     const bookSeats = async () => {
       if (selectedSeats.value.length === 0) {
         $('#no_selected').modal('show')
@@ -289,17 +367,21 @@ export default {
       showId,
       movieName,
       showTime,
+      duration,
+      language,
       price,
       selectedSeats,
       totalPrice,
       errorMessage,
       loading,
       bookSeats,
+      removeSeat,
       handleLogout
     }
   }
 }
 </script>
+    
 
 <style>
 /* 引入原有的CSS文件 */
@@ -350,4 +432,154 @@ export default {
   display: flex;
   align-items: center;
 }
+
+
+
+.booking-details {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* .book-left, .book-right {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.book-left li, .book-right li {
+  margin-bottom: 8px;
+}
+
+.book-left {
+  margin-right: 24px;
+}
+
+.book-left li {
+  font-weight: bold;
+  color: #333;
+} */
+
+.book-right li {
+  color: #666;
+}
+
+.clear {
+  clear: both;
+}
+
+#selected-seats {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#selected-seats li {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 6px 12px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+#selected-seats li span {
+  margin-left: 6px;
+  cursor: pointer;
+  color: #999;
+}
+
+.checkout-button {
+  background: linear-gradient(90deg, #ff3366, #ff0033);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+.checkout-button1 {
+  background: linear-gradient(90deg, #fd87a1, #fe5773);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+
+.checkout-button:hover {
+  background: linear-gradient(90deg, #ff6688, #ff3355);
+}
+
+#legend {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #999;
+}
+
+/* 包裹已选座位的容器 */
+.selected-seats-wrapper {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* 单个已选座位项 - 使用Flex布局 */
+.selected-seat-item {
+  background-color: #f5f7fa;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex; /* 启用Flex布局 */
+  align-items: center; /* 垂直居中对齐 */
+  min-width: 120px;
+  position: relative;
+}
+
+/* 关闭图标 - 放在最左侧 */
+.close-icon {
+  color: #999;
+  font-size: 16px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-icon:hover {
+  color: #ff4d4f; /*  hover时变红 */
+  background-color: rgba(255, 77, 79, 0.1);
+  border-radius: 50%;
+}
+
+/* 座位信息区域 */
+.info {
+  flex: 1; /* 占据剩余空间 */
+}
+
+.seat-info {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.price-info {
+  font-size: 12px;
+  color: #ff4d4f;
+}
+
 </style>
