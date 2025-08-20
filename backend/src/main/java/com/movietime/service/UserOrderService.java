@@ -49,5 +49,12 @@ public interface UserOrderService {
      * @return 订单数量
      */
     int countUserOrders(Long userId);
+    
+    /**
+     * 删除订单
+     * @param orderId 订单ID
+     * @return 是否删除成功
+     */
+    boolean deleteOrder(Long orderId);
 }
 

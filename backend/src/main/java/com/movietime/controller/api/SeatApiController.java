@@ -139,7 +139,9 @@ public class SeatApiController {
                     order.setShowId(request.getShowId());
                     order.setMovieName(movie != null ? movie.getName() : "未知电影");
                     order.setMoviePoster(movie != null ? movie.getPosterPath() : "");
-                    order.setCinemaName("PopcornMovie影院");
+                    // 从场次数据中获取真实的影院名称
+                    String realCinemaName = getCinemaDisplayName(show != null ? show.getTheaterName() : null);
+                    order.setCinemaName(realCinemaName);
                     order.setShowTime(show != null ? show.getTime() : "");
                     order.setStatus("已预订");
                     order.setTotalPrice(show != null ? (double) (show.getPrice() * request.getSeats().size()) : 0.0);
@@ -195,5 +197,31 @@ public class SeatApiController {
         public void setSeats(List<Seat> seats) { this.seats = seats; }
         public Long getUserId() { return userId; }
         public void setUserId(Long userId) { this.userId = userId; }
+    }
+    
+    /**
+     * 根据影院代码获取显示名称
+     * @param theaterName 影院代码
+     * @return 影院显示名称
+     */
+    private String getCinemaDisplayName(String theaterName) {
+        if (theaterName == null) {
+            return "未知影院";
+        }
+        
+        switch (theaterName) {
+            case "UKnow":
+                return "UKnow影院";
+            case "BigFeel":
+                return "BigFeel影院";
+            case "EyeBrand":
+                return "万达影城";
+            case "Happy":
+                return "金逸影城";
+            case "ABC":
+                return "CGV影城";
+            default:
+                return theaterName + "影院";
+        }
     }
 } 

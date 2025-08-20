@@ -48,24 +48,29 @@
             <div 
               v-for="order in recentOrders.slice(0, 3)" 
               :key="order.id" 
-              class="order-item"
-              @click="viewOrder(order)">
-              <div class="order-movie">
-                <img 
-                  :src="getMoviePoster(order.moviePoster)" 
-                  :alt="order.movieName" 
-                  class="order-poster"
-                  @error="handleImageError"
-                />
-                <div class="order-info">
-                  <div class="order-movie-name">{{ order.movieName }}</div>
-                  <div class="order-details">
-                    {{ order.cinemaName }} · {{ order.showTime }}
+              class="order-item">
+              <div class="order-content" @click="viewOrder(order)">
+                <div class="order-movie">
+                  <img 
+                    :src="getMoviePoster(order.moviePoster)" 
+                    :alt="order.movieName" 
+                    class="order-poster"
+                    @error="handleImageError"
+                  />
+                  <div class="order-info">
+                    <div class="order-movie-name">{{ order.movieName }}</div>
+                    <div class="order-details">
+                      {{ order.cinemaName }} · {{ order.showTime }}
+                    </div>
                   </div>
                 </div>
+                <div class="order-status" :class="getStatusClass(order.status)">
+                  {{ getStatusText(order.status) }}
+                </div>
               </div>
-              <div class="order-status" :class="getStatusClass(order.status)">
-                {{ getStatusText(order.status) }}
+              <!-- 已取消订单的删除按钮 -->
+              <div v-if="order.status === '已取消'" class="delete-btn" @click.stop="deleteCancelledOrder(order)">
+                <i class="delete-icon">×</i>
               </div>
             </div>
           </div>
@@ -122,6 +127,7 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getUserOrders, getUserWishlist, getUserStats } from '@/api/user'
+import { deleteCancelledOrder as deleteOrderApi } from '@/api/booking'
 
 export default {
   name: 'UserDropdown',
@@ -272,7 +278,36 @@ export default {
     const viewOrder = (order) => {
       // 跳转到订单详情页
       console.log('查看订单:', order)
+      router.push(`/order-detail/${order.id}`)
       showDropdown.value = false
+    }
+    
+    // 监听路由变化，当从订单详情页返回时刷新数据
+    const handleRouteChange = () => {
+      if (router.currentRoute.value.path === '/') {
+        refreshOrders()
+      }
+    }
+    
+    // 删除已取消的订单
+    const deleteCancelledOrder = async (order) => {
+      try {
+        // 调用API删除订单
+        const response = await deleteOrderApi(order.id)
+        if (response.success) {
+          // 从本地数组中移除该订单
+          const index = recentOrders.value.findIndex(o => o.id === order.id)
+          if (index > -1) {
+            recentOrders.value.splice(index, 1)
+          }
+          ElMessage.success('已清除取消的订单记录')
+        } else {
+          ElMessage.error(response.message || '删除订单记录失败')
+        }
+      } catch (error) {
+        console.error('删除订单记录失败:', error)
+        ElMessage.error('删除订单记录失败')
+      }
     }
 
          const viewMovie = (movie) => {
@@ -305,6 +340,8 @@ export default {
        window.addEventListener('wishlist-updated', refreshWishlist)
        // 监听订单更新事件
        window.addEventListener('order-updated', refreshOrders)
+       // 监听路由变化
+       router.afterEach(handleRouteChange)
        console.log('UserDropdown组件已挂载，事件监听器已设置')
      })
 
@@ -338,7 +375,8 @@ export default {
       handleImageError,
       viewOrder,
       viewMovie,
-      handleLogout
+      handleLogout,
+      deleteCancelledOrder
     }
   }
 }
@@ -498,12 +536,49 @@ export default {
   padding: 10px;
   border-radius: 8px;
   background: #f8f9fa;
-  cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
 }
 
-.order-item:hover {
+.order-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  cursor: pointer;
+}
+
+.order-content:hover {
   background: #e9ecef;
+}
+
+.delete-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ff4757;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+  z-index: 10;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.delete-icon {
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
 }
 
 .order-movie {
@@ -544,6 +619,7 @@ export default {
   padding: 3px 8px;
   border-radius: 10px;
   font-weight: 500;
+  margin-right: 25px; /* 为删除按钮留出空间 */
 }
 
 /* 订单状态样式 */

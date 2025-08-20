@@ -31,4 +31,36 @@ export function bookSeats(data) {
     method: 'post',
     data
   })
+}
+
+// 获取用户订单
+export const getUserOrders = (userId) => {
+  return request({
+    url: `/api/users/${userId}/orders`,
+    method: 'get'
+  })
+}
+
+// 根据订单ID获取订单详情
+export const getOrderById = (orderId) => {
+  return request({
+    url: `/api/user/orders/${orderId}`,
+    method: 'get'
+  })
+}
+
+// 取消订单
+export const cancelOrder = (orderId) => {
+  return request({
+    url: `/api/user/orders/${orderId}/cancel`,
+    method: 'post'
+  })
+}
+
+// 删除已取消的订单
+export const deleteCancelledOrder = (orderId) => {
+  return request({
+    url: `/api/user/orders/${orderId}/delete`,
+    method: 'delete'
+  })
 } 

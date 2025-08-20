@@ -52,5 +52,12 @@ public interface UserOrderDao {
      * @return 订单数量
      */
     int countUserOrders(@Param("userId") Long userId);
+    
+    /**
+     * 删除订单
+     * @param orderId 订单ID
+     * @return 影响行数
+     */
+    int deleteOrder(@Param("orderId") Long orderId);
 }
 

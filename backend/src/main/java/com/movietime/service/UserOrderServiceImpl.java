@@ -42,5 +42,10 @@ public class UserOrderServiceImpl implements UserOrderService {
     public int countUserOrders(Long userId) {
         return userOrderDao.countUserOrders(userId);
     }
+    
+    @Override
+    public boolean deleteOrder(Long orderId) {
+        return userOrderDao.deleteOrder(orderId) > 0;
+    }
 }
 

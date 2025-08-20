@@ -62,4 +62,10 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!-- 删除订单 -->
+    <delete id="deleteOrder">
+        DELETE FROM user_order 
+        WHERE id = #{orderId}
+    </delete>
+
 </mapper>

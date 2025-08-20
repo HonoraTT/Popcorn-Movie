@@ -66,10 +66,55 @@ public class UserApiController {
         } catch (Exception e) {
             System.err.println("获取用户订单失败: " + e.getMessage());
             e.printStackTrace();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "获取订单失败：" + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+    
+    // 根据订单ID获取订单详情
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<?> getOrderById(@PathVariable Long orderId) {
+        try {
+            System.out.println("获取订单详情请求，订单ID: " + orderId);
             Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", "获取订单失败：" + e.getMessage());
-            return ResponseEntity.internalServerError().body(response);
+            
+            // 从数据库获取订单详情
+            UserOrder order = userOrderService.getOrderById(orderId);
+            if (order == null) {
+                response.put("success", false);
+                response.put("message", "订单不存在");
+                return ResponseEntity.notFound().build();
+            }
+            
+            // 转换为前端需要的格式
+            Map<String, Object> orderMap = new HashMap<>();
+            orderMap.put("id", order.getId());
+            orderMap.put("userId", order.getUserId());
+            orderMap.put("movieId", order.getMovieId());
+            orderMap.put("showId", order.getShowId());
+            orderMap.put("movieName", order.getMovieName());
+            orderMap.put("moviePoster", order.getMoviePoster());
+            orderMap.put("cinemaName", order.getCinemaName());
+            orderMap.put("showTime", order.getShowTime());
+            orderMap.put("status", order.getStatus());
+            orderMap.put("totalPrice", order.getTotalPrice());
+            orderMap.put("seats", order.getSeats());
+            orderMap.put("orderTime", order.getOrderTime());
+            
+            response.put("success", true);
+            response.put("message", "获取订单详情成功");
+            response.put("data", orderMap);
+            System.out.println("返回订单详情: " + order.getMovieName() + " - " + order.getStatus());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("获取订单详情失败: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "获取订单详情失败：" + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
 
@@ -246,5 +291,93 @@ public class UserApiController {
         }
         
         return movieInfo;
+    }
+    
+    // 取消订单
+    @PostMapping("/orders/{orderId}/cancel")
+    public ResponseEntity<?> cancelOrder(@PathVariable Long orderId) {
+        try {
+            System.out.println("取消订单请求，订单ID: " + orderId);
+            Map<String, Object> response = new HashMap<>();
+            
+            // 从数据库获取订单详情
+            UserOrder order = userOrderService.getOrderById(orderId);
+            if (order == null) {
+                response.put("success", false);
+                response.put("message", "订单不存在");
+                return ResponseEntity.notFound().build();
+            }
+            
+            // 检查订单状态是否可以取消
+            if (!"已预订".equals(order.getStatus())) {
+                response.put("success", false);
+                response.put("message", "只有已预订的订单可以取消");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // 更新订单状态为已取消
+            boolean success = userOrderService.updateOrderStatus(orderId, "已取消");
+            if (success) {
+                response.put("success", true);
+                response.put("message", "订单取消成功");
+                System.out.println("订单取消成功，订单ID: " + orderId);
+            } else {
+                response.put("success", false);
+                response.put("message", "订单取消失败");
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("取消订单失败: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "取消订单失败：" + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+    
+    // 删除已取消的订单
+    @DeleteMapping("/orders/{orderId}/delete")
+    public ResponseEntity<?> deleteCancelledOrder(@PathVariable Long orderId) {
+        try {
+            System.out.println("删除已取消订单请求，订单ID: " + orderId);
+            Map<String, Object> response = new HashMap<>();
+            
+            // 从数据库获取订单详情
+            UserOrder order = userOrderService.getOrderById(orderId);
+            if (order == null) {
+                response.put("success", false);
+                response.put("message", "订单不存在");
+                return ResponseEntity.notFound().build();
+            }
+            
+            // 检查订单状态是否为已取消
+            if (!"已取消".equals(order.getStatus())) {
+                response.put("success", false);
+                response.put("message", "只能删除已取消的订单");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // 删除订单
+            boolean success = userOrderService.deleteOrder(orderId);
+            if (success) {
+                response.put("success", true);
+                response.put("message", "订单删除成功");
+                System.out.println("订单删除成功，订单ID: " + orderId);
+            } else {
+                response.put("success", false);
+                response.put("message", "订单删除失败");
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("删除订单失败: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "删除订单失败：" + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
     }
 }
