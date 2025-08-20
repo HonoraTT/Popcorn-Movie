@@ -3,9 +3,13 @@ package com.movietime.controller.api;
 import com.movietime.entity.Seat;
 import com.movietime.entity.Show;
 import com.movietime.entity.Movie;
+import com.movietime.entity.User;
+import com.movietime.entity.UserOrder;
 import com.movietime.service.SeatService;
 import com.movietime.service.ShowService;
 import com.movietime.service.MovieService;
+import com.movietime.service.UserOrderService;
+import com.movietime.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/seats")
@@ -27,6 +32,12 @@ public class SeatApiController {
     
     @Autowired
     private MovieService movieService;
+    
+    @Autowired
+    private UserOrderService userOrderService;
+    
+    @Autowired
+    private UserService userService;
     
     @GetMapping("/show/{showId}")
     public ResponseEntity<?> getSeatMap(@PathVariable Long showId) {
@@ -77,6 +88,83 @@ public class SeatApiController {
             boolean success = seatService.book(request.getSeats());
             
             if (success) {
+                // 创建用户订单
+                try {
+                    System.out.println("=== 开始创建用户订单 ===");
+                    System.out.println("用户ID: " + request.getUserId());
+                    System.out.println("场次ID: " + request.getShowId());
+                    System.out.println("座位数量: " + request.getSeats().size());
+                    
+                    // 获取用户信息
+                    User user = userService.findById(request.getUserId());
+                    if (user == null) {
+                        System.out.println("用户不存在，用户ID: " + request.getUserId());
+                    } else {
+                        System.out.println("用户邮箱: " + user.getEmail());
+                    }
+                    
+                    // 获取场次信息
+                    Show show = showService.findOne(request.getShowId());
+                    if (show == null) {
+                        System.out.println("场次不存在，场次ID: " + request.getShowId());
+                    } else {
+                        System.out.println("场次时间: " + show.getTime());
+                        System.out.println("场次价格: " + show.getPrice());
+                    }
+                    
+                    // 获取电影信息
+                    Movie movie = null;
+                    if (show != null) {
+                        movie = movieService.findOne(show.getMovieId());
+                        if (movie == null) {
+                            System.out.println("电影不存在，电影ID: " + show.getMovieId());
+                        } else {
+                            System.out.println("电影名称: " + movie.getName());
+                        }
+                    }
+                    
+                    // 构建座位信息字符串
+                    StringBuilder seatsInfo = new StringBuilder();
+                    for (Seat seat : request.getSeats()) {
+                        if (seatsInfo.length() > 0) {
+                            seatsInfo.append(", ");
+                        }
+                        seatsInfo.append(seat.getRow()).append("排").append(seat.getCol()).append("座");
+                    }
+                    
+                    // 创建订单对象
+                    UserOrder order = new UserOrder();
+                    order.setUserId(request.getUserId());
+                    order.setMovieId(show != null ? show.getMovieId() : 0L);
+                    order.setShowId(request.getShowId());
+                    order.setMovieName(movie != null ? movie.getName() : "未知电影");
+                    order.setMoviePoster(movie != null ? movie.getPosterPath() : "");
+                    order.setCinemaName("PopcornMovie影院");
+                    order.setShowTime(show != null ? show.getTime() : "");
+                    order.setStatus("已预订");
+                    order.setTotalPrice(show != null ? (double) (show.getPrice() * request.getSeats().size()) : 0.0);
+                    order.setSeats(seatsInfo.toString());
+                    order.setOrderTime(LocalDateTime.now());
+                    
+                    System.out.println("订单对象创建完成，准备保存到数据库...");
+                    System.out.println("订单详情: " + order.getMovieName() + " - " + order.getTotalPrice() + "元");
+                    
+                    boolean orderResult = userOrderService.createOrder(order);
+                    System.out.println("用户订单创建结果: " + orderResult);
+                    if (orderResult) {
+                        System.out.println("用户订单创建成功，订单ID: " + order.getId());
+                        System.out.println("=== 订单创建完成 ===");
+                    } else {
+                        System.out.println("用户订单创建失败！");
+                        System.out.println("=== 订单创建失败 ===");
+                    }
+                    
+                } catch (Exception e) {
+                    System.err.println("创建用户订单失败: " + e.getMessage());
+                    e.printStackTrace();
+                    // 即使订单创建失败，座位预订仍然有效
+                }
+                
                 Map<String, Object> response = new HashMap<>();
                 response.put("message", "预订成功");
                 response.put("success", true);
@@ -99,10 +187,13 @@ public class SeatApiController {
     public static class BookingRequest {
         private Long showId;
         private List<Seat> seats;
+        private Long userId; // 添加用户ID
         
         public Long getShowId() { return showId; }
         public void setShowId(Long showId) { this.showId = showId; }
         public List<Seat> getSeats() { return seats; }
         public void setSeats(List<Seat> seats) { this.seats = seats; }
+        public Long getUserId() { return userId; }
+        public void setUserId(Long userId) { this.userId = userId; }
     }
 } 

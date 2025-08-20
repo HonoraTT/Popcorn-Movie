@@ -255,11 +255,14 @@ export default {
         loading.value = true
         const response = await bookSeatsApi({
           showId: showId.value,
-          seats: selectedSeats.value
+          seats: selectedSeats.value,
+          userId: currentUser.value.id
         })
 
         if (response.success) {
           ElMessage.success('预订成功！')
+          // 触发订单更新事件，通知UserDropdown组件刷新订单数据
+          window.dispatchEvent(new CustomEvent('order-updated'))
           router.push('/payment')
         } else {
           errorMessage.value = response.message || '预订失败'

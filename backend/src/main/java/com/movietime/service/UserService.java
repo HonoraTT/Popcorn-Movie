@@ -8,4 +8,5 @@ public interface UserService {
     boolean checkPassword(String username, String passwordInput);
     void registerUser(String username, String password, String firstName, String lastName);
     User getUserInstance(String username, String password);
+    User findById(Long id);
 }

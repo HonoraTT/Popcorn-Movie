@@ -2,6 +2,8 @@ package com.movietime.controller.api;
 
 import com.movietime.entity.UserOrder;
 import com.movietime.entity.UserWishlist;
+import com.movietime.service.UserOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,72 +17,17 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class UserApiController {
     
+    @Autowired
+    private UserOrderService userOrderService;
+    
     // 模拟数据库存储用户想看片单
     private static final Map<Long, List<Map<String, Object>>> userWishlists = new HashMap<>();
     
-    // 初始化一些测试数据
+    // 初始化空的想看片单
     static {
-        List<Map<String, Object>> defaultWishlist = new ArrayList<>();
-        
-        Map<String, Object> movie1 = new HashMap<>();
-        movie1.put("id", 1L);
-        movie1.put("movieId", 1L);
-        movie1.put("name", "黑客帝国");
-        movie1.put("poster", "/templates/images/The Matrix.jpg");
-        defaultWishlist.add(movie1);
-        
-        Map<String, Object> movie2 = new HashMap<>();
-        movie2.put("id", 2L);
-        movie2.put("movieId", 2L);
-        movie2.put("name", "霍比特人：意外之旅");
-        movie2.put("poster", "/templates/images/The Hobbit.jpg");
-        defaultWishlist.add(movie2);
-        
-        Map<String, Object> movie3 = new HashMap<>();
-        movie3.put("id", 3L);
-        movie3.put("movieId", 3L);
-        movie3.put("name", "指环王：护戒使者");
-        movie3.put("poster", "/templates/images/Lord of the rings.jpg");
-        defaultWishlist.add(movie3);
-        
-        Map<String, Object> movie4 = new HashMap<>();
-        movie4.put("id", 4L);
-        movie4.put("movieId", 4L);
-        movie4.put("name", "加勒比海盗：黑珍珠号诅咒");
-        movie4.put("poster", "/templates/images/Pirates of the Caribbean.jpg");
-        defaultWishlist.add(movie4);
-        
-        Map<String, Object> movie5 = new HashMap<>();
-        movie5.put("id", 5L);
-        movie5.put("movieId", 5L);
-        movie5.put("name", "罗小黑战记2");
-        movie5.put("poster", "/templates/images/The Legend of Hei.jpg");
-        defaultWishlist.add(movie5);
-        
-        Map<String, Object> movie6 = new HashMap<>();
-        movie6.put("id", 6L);
-        movie6.put("movieId", 6L);
-        movie6.put("name", "星际穿越");
-        movie6.put("poster", "/templates/images/Interstellar.jpg");
-        defaultWishlist.add(movie6);
-        
-        Map<String, Object> movie7 = new HashMap<>();
-        movie7.put("id", 7L);
-        movie7.put("movieId", 7L);
-        movie7.put("name", "南京照相馆");
-        movie7.put("poster", "/templates/images/Dead to Rights.jpg");
-        defaultWishlist.add(movie7);
-        
-        Map<String, Object> movie8 = new HashMap<>();
-        movie8.put("id", 8L);
-        movie8.put("movieId", 8L);
-        movie8.put("name", "寻梦环游记");
-        movie8.put("poster", "/templates/images/Coco.jpg");
-        defaultWishlist.add(movie8);
-        
-        // 为所有用户设置默认想看片单
+        // 为所有用户设置空的想看片单
         for (long userId = 1; userId <= 10; userId++) {
-            userWishlists.put(userId, new ArrayList<>(defaultWishlist));
+            userWishlists.put(userId, new ArrayList<>());
         }
     }
 
@@ -88,35 +35,37 @@ public class UserApiController {
     @GetMapping("/{userId}/orders")
     public ResponseEntity<?> getUserOrders(@PathVariable Long userId) {
         try {
-            // 模拟数据 - 实际应该从数据库获取
+            System.out.println("获取用户订单请求，用户ID: " + userId);
             Map<String, Object> response = new HashMap<>();
+            
+            // 从数据库获取真实订单数据
+            List<UserOrder> orders = userOrderService.getRecentOrders(userId, 10);
+            System.out.println("从数据库获取到订单数量: " + orders.size());
+            
+            // 转换为前端需要的格式
+            List<Map<String, Object>> orderList = new ArrayList<>();
+            for (UserOrder order : orders) {
+                Map<String, Object> orderMap = new HashMap<>();
+                orderMap.put("id", order.getId());
+                orderMap.put("movieName", order.getMovieName());
+                orderMap.put("moviePoster", order.getMoviePoster());
+                orderMap.put("cinemaName", order.getCinemaName());
+                orderMap.put("showTime", order.getShowTime());
+                orderMap.put("status", order.getStatus());
+                orderMap.put("totalPrice", order.getTotalPrice());
+                orderMap.put("seats", order.getSeats());
+                orderList.add(orderMap);
+                System.out.println("订单详情: " + order.getMovieName() + " - " + order.getStatus());
+            }
+            
             response.put("success", true);
             response.put("message", "获取订单成功");
-            
-            // 模拟订单数据
-            List<Map<String, Object>> orders = new ArrayList<>();
-            
-            Map<String, Object> order1 = new HashMap<>();
-            order1.put("id", 1L);
-            order1.put("movieName", "加勒比海盗：黑珍珠号的诅咒");
-            order1.put("moviePoster", "/templates/images/Pirates of the Caribbean.jpg");
-            order1.put("cinemaName", "UKnow影院");
-            order1.put("showTime", "2024-01-15 19:30");
-            order1.put("status", "completed");
-            orders.add(order1);
-            
-            Map<String, Object> order2 = new HashMap<>();
-            order2.put("id", 2L);
-            order2.put("movieName", "指环王：护戒使者");
-            order2.put("moviePoster", "/templates/images/Lord of the rings.jpg");
-            order2.put("cinemaName", "BigFeel影院");
-            order2.put("showTime", "2024-01-20 20:00");
-            order2.put("status", "upcoming");
-            orders.add(order2);
-            
-            response.put("data", orders);
+            response.put("data", orderList);
+            System.out.println("返回订单数据: " + orderList.size() + " 条");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.err.println("获取用户订单失败: " + e.getMessage());
+            e.printStackTrace();
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "获取订单失败：" + e.getMessage());

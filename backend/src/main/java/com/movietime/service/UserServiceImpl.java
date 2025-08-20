@@ -36,4 +36,8 @@ public class UserServiceImpl implements UserService {
             return user;
         return null;
     }
+    
+    public User findById(Long id) {
+        return userDao.findOne(id);
+    }
 }

@@ -37,41 +37,55 @@
       
 
       <!-- 订单信息 -->
-      <div class="orders-section" v-if="recentOrders.length > 0">
+      <div class="orders-section">
         <div class="section-title">
           <i class="icon-ticket"></i>
           <span>最近订单</span>
         </div>
         <div class="order-list">
-          <div 
-            v-for="order in recentOrders.slice(0, 3)" 
-            :key="order.id" 
-            class="order-item"
-            @click="viewOrder(order)">
-            <div class="order-movie">
-              <img :src="order.moviePoster" :alt="order.movieName" class="order-poster" />
-              <div class="order-info">
-                <div class="order-movie-name">{{ order.movieName }}</div>
-                <div class="order-details">
-                  {{ order.cinemaName }} · {{ order.showTime }}
+          <!-- 有订单时显示订单列表 -->
+          <div v-if="recentOrders.length > 0">
+            <div 
+              v-for="order in recentOrders.slice(0, 3)" 
+              :key="order.id" 
+              class="order-item"
+              @click="viewOrder(order)">
+              <div class="order-movie">
+                <img 
+                  :src="getMoviePoster(order.moviePoster)" 
+                  :alt="order.movieName" 
+                  class="order-poster"
+                  @error="handleImageError"
+                />
+                <div class="order-info">
+                  <div class="order-movie-name">{{ order.movieName }}</div>
+                  <div class="order-details">
+                    {{ order.cinemaName }} · {{ order.showTime }}
+                  </div>
                 </div>
               </div>
+              <div class="order-status" :class="getStatusClass(order.status)">
+                {{ getStatusText(order.status) }}
+              </div>
             </div>
-            <div class="order-status" :class="order.status">
-              {{ getStatusText(order.status) }}
-            </div>
+          </div>
+          <!-- 没有订单时显示提示 -->
+          <div v-else class="order-empty">
+            <div class="empty-icon">🎫</div>
+            <div class="empty-text">暂无最近订单</div>
           </div>
         </div>
       </div>
 
                      <!-- 想看片单 -->
-        <div class="wishlist-section" v-if="wishlist.length > 0">
+        <div class="wishlist-section">
           <div class="section-title">
             <i class="icon-heart"></i>
             <span>想看片单</span>
           </div>
           <div class="wishlist-container">
-            <div class="wishlist-grid">
+            <!-- 有想看片单时显示电影列表 -->
+            <div v-if="wishlist.length > 0" class="wishlist-grid">
               <div 
                 v-for="movie in wishlist" 
                 :key="movie.id" 
@@ -80,6 +94,11 @@
                 <img :src="movie.poster" :alt="movie.name" class="wishlist-poster" />
                 <div class="wishlist-movie-name">{{ movie.name }}</div>
               </div>
+            </div>
+            <!-- 没有想看片单时显示提示 -->
+            <div v-else class="wishlist-empty">
+              <div class="empty-icon">📽️</div>
+              <div class="empty-text">暂未添加想看电影</div>
             </div>
           </div>
         </div>
@@ -119,31 +138,37 @@ export default {
          // 加载用户数据
      const loadUserData = async () => {
        try {
-         if (!currentUser.value?.id) return
+         console.log('loadUserData被调用，当前用户:', currentUser.value)
+         if (!currentUser.value?.id) {
+           console.warn('当前用户没有ID，无法加载数据')
+           return
+         }
          
-         // 尝试从API获取数据，如果失败则使用模拟数据
-         try {
-           const [ordersResponse, wishlistResponse] = await Promise.all([
-             getUserOrders(currentUser.value.id),
-             getUserWishlist(currentUser.value.id)
-           ])
-           
-           if (ordersResponse.success) {
-             recentOrders.value = ordersResponse.data || []
-           }
-           
-           if (wishlistResponse.success) {
-             wishlist.value = wishlistResponse.data || []
-           }
-           
-         } catch (apiError) {
-           console.warn('API调用失败，使用模拟数据:', apiError)
-           // 使用模拟数据作为后备
-           loadMockData()
+         console.log('开始加载用户数据，用户ID:', currentUser.value.id)
+         
+         // 尝试从API获取数据
+         const [ordersResponse, wishlistResponse] = await Promise.all([
+           getUserOrders(currentUser.value.id),
+           getUserWishlist(currentUser.value.id)
+         ])
+         
+         console.log('订单API响应:', JSON.stringify(ordersResponse, null, 2))
+         console.log('想看片单API响应:', JSON.stringify(wishlistResponse, null, 2))
+         
+         if (ordersResponse.success) {
+           recentOrders.value = ordersResponse.data || []
+           console.log('订单数据已设置:', recentOrders.value)
+         }
+         
+         if (wishlistResponse.success) {
+           wishlist.value = wishlistResponse.data || []
+           console.log('想看片单数据已设置:', wishlist.value)
          }
        } catch (error) {
          console.error('加载用户数据失败:', error)
-         loadMockData()
+         // 不加载模拟数据，保持空状态
+         recentOrders.value = []
+         wishlist.value = []
        }
      }
 
@@ -163,79 +188,35 @@ export default {
        }
      }
 
-    // 模拟数据作为后备
-    const loadMockData = () => {
-      recentOrders.value = [
-        {
-          id: 1,
-          movieName: '加勒比海盗：黑珍珠号的诅咒',
-          moviePoster: '/templates/images/Pirates of the Caribbean.jpg',
-          cinemaName: 'UKnow影院',
-          showTime: '2024-01-15 19:30',
-          status: 'completed'
-        },
-        {
-          id: 2,
-          movieName: '指环王：护戒使者',
-          moviePoster: '/templates/images/Lord of the rings.jpg',
-          cinemaName: 'BigFeel影院',
-          showTime: '2024-01-20 20:00',
-          status: 'upcoming'
-        }
-      ]
-
-             wishlist.value = [
-         {
-           id: 1,
-           movieId: 1,
-           name: '黑客帝国',
-           poster: '/templates/images/The Matrix.jpg'
-         },
-         {
-           id: 2,
-           movieId: 2,
-           name: '霍比特人：意外之旅',
-           poster: '/templates/images/The Hobbit.jpg'
-         },
-         {
-           id: 3,
-           movieId: 3,
-           name: '指环王：护戒使者',
-           poster: '/templates/images/Lord of the rings.jpg'
-         },
-         {
-           id: 4,
-           movieId: 4,
-           name: '加勒比海盗：黑珍珠号诅咒',
-           poster: '/templates/images/Pirates of the Caribbean.jpg'
-         },
-         {
-           id: 5,
-           movieId: 5,
-           name: '罗小黑战记2',
-           poster: '/templates/images/The Legend of Hei.jpg'
-         },
-         {
-           id: 6,
-           movieId: 6,
-           name: '星际穿越',
-           poster: '/templates/images/Interstellar.jpg'
-         },
-         {
-           id: 7,
-           movieId: 7,
-           name: '南京照相馆',
-           poster: '/templates/images/Dead to Rights.jpg'
-         },
-         {
-           id: 8,
-           movieId: 8,
-           name: '寻梦环游记',
-           poster: '/templates/images/Coco.jpg'
+     // 刷新订单数据
+     const refreshOrders = async () => {
+       console.log('refreshOrders被调用，当前用户:', currentUser.value)
+       if (!currentUser.value?.id) {
+         console.warn('当前用户没有ID，无法刷新订单数据')
+         return
+       }
+       
+       try {
+         console.log('正在刷新订单数据，用户ID:', currentUser.value.id)
+         const response = await getUserOrders(currentUser.value.id)
+         console.log('订单刷新API响应:', JSON.stringify(response, null, 2))
+         if (response.success) {
+           recentOrders.value = response.data || []
+           console.log('订单数据已更新:', recentOrders.value)
+         } else {
+           console.warn('订单API返回失败:', response)
          }
-       ]
+       } catch (error) {
+         console.warn('刷新订单数据失败:', error)
+       }
+     }
 
-      
+    // 模拟数据作为后备（仅在没有API数据时使用）
+    const loadMockData = () => {
+      // 初始想看片单为空
+      wishlist.value = []
+      // 初始订单为空
+      recentOrders.value = []
     }
 
     const handleContainerMouseEnter = () => {
@@ -253,9 +234,39 @@ export default {
       const statusMap = {
         'completed': '已完成',
         'upcoming': '即将观看',
-        'cancelled': '已取消'
+        'cancelled': '已取消',
+        '已预订': '已预订',
+        '已支付': '已支付',
+        '已完成': '已完成',
+        '已取消': '已取消'
       }
       return statusMap[status] || '未知'
+    }
+    
+    const getStatusClass = (status) => {
+      const statusClassMap = {
+        '已预订': 'status-booked',
+        '已支付': 'status-paid',
+        '已完成': 'status-completed',
+        '已取消': 'status-cancelled'
+      }
+      return statusClassMap[status] || 'status-unknown'
+    }
+    
+    const getMoviePoster = (posterPath) => {
+      if (!posterPath) {
+        return '/templates/images/others/1.jpg' // 默认电影海报
+      }
+      // 如果路径不是以http开头，添加/templates前缀
+      if (!posterPath.startsWith('http') && !posterPath.startsWith('/templates')) {
+        return `/templates${posterPath}`
+      }
+      return posterPath
+    }
+    
+    const handleImageError = (event) => {
+      // 图片加载失败时使用默认图片
+      event.target.src = '/templates/images/others/1.jpg'
     }
 
     const viewOrder = (order) => {
@@ -292,6 +303,8 @@ export default {
        
        // 监听想看片单变化事件
        window.addEventListener('wishlist-updated', refreshWishlist)
+       // 监听订单更新事件
+       window.addEventListener('order-updated', refreshOrders)
        console.log('UserDropdown组件已挂载，事件监听器已设置')
      })
 
@@ -309,6 +322,7 @@ export default {
      // 组件卸载时移除事件监听器
      onUnmounted(() => {
        window.removeEventListener('wishlist-updated', refreshWishlist)
+       window.removeEventListener('order-updated', refreshOrders)
      })
 
     return {
@@ -316,12 +330,15 @@ export default {
       currentUser,
       recentOrders,
       wishlist,
-             handleContainerMouseEnter,
-       handleContainerMouseLeave,
-       getStatusText,
-       viewOrder,
-       viewMovie,
-       handleLogout
+      handleContainerMouseEnter,
+      handleContainerMouseLeave,
+      getStatusText,
+      getStatusClass,
+      getMoviePoster,
+      handleImageError,
+      viewOrder,
+      viewMovie,
+      handleLogout
     }
   }
 }
@@ -529,6 +546,51 @@ export default {
   font-weight: 500;
 }
 
+/* 订单状态样式 */
+.status-booked {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-paid {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-unknown {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+/* 空状态样式 */
+.order-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  color: #6c757d;
+}
+
+.order-empty .empty-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.order-empty .empty-text {
+  font-size: 14px;
+  color: #6c757d;
+}
+
 .order-status.completed {
   background: #d4edda;
   color: #155724;
@@ -592,6 +654,28 @@ export default {
   white-space: nowrap;
   line-height: 1.2;
   max-width: 60px;
+}
+
+/* 空状态样式 */
+.wishlist-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+  color: #999;
+}
+
+.empty-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+  opacity: 0.6;
+}
+
+.empty-text {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
 }
 
  /* 退出登录 */
