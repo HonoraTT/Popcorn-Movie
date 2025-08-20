@@ -61,7 +61,7 @@
           
           <div class="rating-section">
             <div class="rating-item">
-              <div class="rating-label">猫眼口碑</div>
+              <div class="rating-label">电影口碑</div>
               <div class="rating-score">{{ movie.ratingScore || '9.6' }}</div>
               <div class="rating-count">{{ movie.ratingCount || '63043' }}人评分</div>
             </div>

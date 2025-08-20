@@ -790,7 +790,7 @@ export default {
   /* 图标样式 */
   .icon-ticket::before { content: "🎫"; }
   .icon-heart::before { content: "❤️"; }
-  .icon-logout::before { content: "🚪"; }
+  /* .icon-logout::before { content: "🚪"; } */
 
  /* 响应式设计 */
  @media (max-width: 768px) {

@@ -111,11 +111,23 @@ spring:
 ```
 
 2. 执行SQL脚本
+
+#### 方法一：使用快速设置脚本（推荐）
+```bash
+# Windows用户
+./setup_database.bat
+
+# 或手动执行
+./import_database.bat
+```
+
+#### 方法二：手动执行SQL脚本
 ```bash
 # 创建数据库和表
 mysql -u root -p < backend/sql/movietime.sql
-mysql -u root -p < backend/sql/create_user_order_table.sql
-mysql -u root -p < backend/sql/update_movie_table.sql
+
+# 如果存在完整数据库导出文件，也可以使用
+mysql -u root -p < backend/sql/movietime_complete.sql
 ```
 
 3. 启动后端服务
