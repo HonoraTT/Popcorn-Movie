@@ -282,8 +282,20 @@ export default {
           })
 
           // 设置已售座位
-          if (soldSeats.value.length > 0) {
-            seatChart.value.get(soldSeats.value).status('unavailable')
+          if (soldSeats.value && soldSeats.value.length > 0) {
+            soldSeats.value.forEach(seatStr => {
+              if (seatStr && typeof seatStr === 'string') {
+                const [row, col] = seatStr.split('_')
+                const seatKey = `${row}-${col}`
+                const seatId = seatIdMap.value[seatKey]
+                if (seatId) {
+                  const seat = seatChart.value.get(seatId)
+                  if (seat) {
+                    seat.status('unavailable')
+                  }
+                }
+              }
+            })
           }
           
           // 初始化时建立所有座位的ID映射

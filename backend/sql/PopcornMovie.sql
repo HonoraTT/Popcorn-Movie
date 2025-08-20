@@ -153,7 +153,53 @@ INSERT INTO `show` VALUES ('77', 'BigFeel', '12:00', '40', '10', 'aa_aa_aa|aa_aa
 INSERT INTO `show` VALUES ('78', 'EyeBrand', '15:30', '90', '10', 'aaa__aaa|aaa__aaa|aaa__aaa|aaa__aaa|aaa__aaa|aaa__aaa|aaa__aaa|aaa__aaa|');
 
 -- =====================================================
--- 4. 用户订单表 (user_order)
+-- 4. 标签表 (tag)
+-- =====================================================
+DROP TABLE IF EXISTS `tag`;
+CREATE TABLE `tag` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 插入标签数据
+INSERT INTO `tag` (`name`, `description`) VALUES
+('精选', '精选推荐电影'),
+('热门', '热门电影'),
+('高分', '高评分电影'),
+('最新', '最新上映电影');
+
+-- =====================================================
+-- 5. 电影标签关联表 (tag_movie)
+-- =====================================================
+DROP TABLE IF EXISTS `tag_movie`;
+CREATE TABLE `tag_movie` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tag_id` bigint(20) NOT NULL,
+  `movie_id` bigint(20) NOT NULL,
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_tag_movie` (`tag_id`, `movie_id`),
+  KEY `idx_tag_id` (`tag_id`),
+  KEY `idx_movie_id` (`movie_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 插入电影标签关联数据
+INSERT INTO `tag_movie` (`tag_id`, `movie_id`) VALUES
+-- 精选标签
+(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10),
+-- 热门标签
+(2, 1), (2, 3), (2, 5), (2, 6), (2, 8),
+-- 高分标签
+(3, 1), (3, 3), (3, 5), (3, 6), (3, 8),
+-- 最新标签
+(4, 5), (4, 7), (4, 9), (4, 10);
+
+-- =====================================================
+-- 6. 用户订单表 (user_order)
 -- =====================================================
 DROP TABLE IF EXISTS `user_order`;
 CREATE TABLE `user_order` (
@@ -191,7 +237,7 @@ INSERT INTO `user_order` (`user_id`, `movie_id`, `show_id`, `movie_name`, `movie
 (3, 8, 58, '寻梦环游记', '/images/Coco.jpg', 'BigFeel影院', '2025-08-24 10:00', 'upcoming', '2025-08-15 14:20:00', 40.00, '[{"row": 5, "col": 3}, {"row": 5, "col": 4}]');
 
 -- =====================================================
--- 5. 用户表 (user)
+-- 7. 用户表 (user)
 -- =====================================================
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
@@ -216,7 +262,7 @@ INSERT INTO `user` (`username`, `email`, `password`, `phone`, `avatar`) VALUES
 ('user3', 'user3@example.com', 'password123', '13800138003', '/images/avatar/user3.jpg');
 
 -- =====================================================
--- 6. 收藏表 (favorite)
+-- 8. 收藏表 (favorite)
 -- =====================================================
 DROP TABLE IF EXISTS `favorite`;
 CREATE TABLE `favorite` (
@@ -237,7 +283,7 @@ INSERT INTO `favorite` (`user_id`, `movie_id`) VALUES
 (3, 4), (3, 7), (3, 9);
 
 -- =====================================================
--- 7. 评论表 (review)
+-- 9. 评论表 (review)
 -- =====================================================
 DROP TABLE IF EXISTS `review`;
 CREATE TABLE `review` (
@@ -263,7 +309,7 @@ INSERT INTO `review` (`user_id`, `movie_id`, `rating`, `comment`) VALUES
 (3, 7, 4, '历史题材很有意义，演员表演到位。');
 
 -- =====================================================
--- 8. 支付表 (payment)
+-- 10. 支付表 (payment)
 -- =====================================================
 DROP TABLE IF EXISTS `payment`;
 CREATE TABLE `payment` (
@@ -289,7 +335,7 @@ INSERT INTO `payment` (`order_id`, `payment_method`, `amount`, `status`, `transa
 (5, 'alipay', 70.00, 'pending', 'ALI202508161130005');
 
 -- =====================================================
--- 9. 优惠券表 (coupon)
+-- 11. 优惠券表 (coupon)
 -- =====================================================
 DROP TABLE IF EXISTS `coupon`;
 CREATE TABLE `coupon` (
@@ -402,28 +448,62 @@ INSERT INTO `hall` (`theater_id`, `name`, `capacity`, `screen_type`, `sound_syst
 DROP TABLE IF EXISTS `seat`;
 CREATE TABLE `seat` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `hall_id` bigint(20) NOT NULL,
+  `show_id` bigint(20) NOT NULL,
   `row_number` int(11) NOT NULL,
   `column_number` int(11) NOT NULL,
   `seat_type` varchar(20) DEFAULT 'normal',
   `price_multiplier` decimal(3,2) DEFAULT 1.00,
   `status` varchar(20) NOT NULL DEFAULT 'available',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_hall_row_col` (`hall_id`, `row_number`, `column_number`),
-  KEY `idx_hall_id` (`hall_id`)
+  UNIQUE KEY `uk_show_row_col` (`show_id`, `row_number`, `column_number`),
+  KEY `idx_show_id` (`show_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- 插入座位数据（示例：为1号厅插入座位）
-INSERT INTO `seat` (`hall_id`, `row_number`, `column_number`, `seat_type`, `price_multiplier`) VALUES
--- 第1排（普通座位）
+-- 插入座位数据（为每个场次创建座位）
+-- 场次1的座位
+INSERT INTO `seat` (`show_id`, `row_number`, `column_number`, `seat_type`, `price_multiplier`) VALUES
 (1, 1, 1, 'normal', 1.00), (1, 1, 2, 'normal', 1.00), (1, 1, 3, 'normal', 1.00), (1, 1, 4, 'normal', 1.00),
 (1, 1, 5, 'normal', 1.00), (1, 1, 6, 'normal', 1.00), (1, 1, 7, 'normal', 1.00), (1, 1, 8, 'normal', 1.00),
--- 第2排（普通座位）
 (1, 2, 1, 'normal', 1.00), (1, 2, 2, 'normal', 1.00), (1, 2, 3, 'normal', 1.00), (1, 2, 4, 'normal', 1.00),
 (1, 2, 5, 'normal', 1.00), (1, 2, 6, 'normal', 1.00), (1, 2, 7, 'normal', 1.00), (1, 2, 8, 'normal', 1.00),
--- 第3排（情侣座）
 (1, 3, 1, 'couple', 1.20), (1, 3, 2, 'couple', 1.20), (1, 3, 3, 'couple', 1.20), (1, 3, 4, 'couple', 1.20),
 (1, 3, 5, 'couple', 1.20), (1, 3, 6, 'couple', 1.20), (1, 3, 7, 'couple', 1.20), (1, 3, 8, 'couple', 1.20);
+
+-- 场次2的座位
+INSERT INTO `seat` (`show_id`, `row_number`, `column_number`, `seat_type`, `price_multiplier`) VALUES
+(2, 1, 1, 'normal', 1.00), (2, 1, 2, 'normal', 1.00), (2, 1, 3, 'normal', 1.00), (2, 1, 4, 'normal', 1.00),
+(2, 1, 5, 'normal', 1.00), (2, 1, 6, 'normal', 1.00), (2, 1, 7, 'normal', 1.00), (2, 1, 8, 'normal', 1.00),
+(2, 2, 1, 'normal', 1.00), (2, 2, 2, 'normal', 1.00), (2, 2, 3, 'normal', 1.00), (2, 2, 4, 'normal', 1.00),
+(2, 2, 5, 'normal', 1.00), (2, 2, 6, 'normal', 1.00), (2, 2, 7, 'normal', 1.00), (2, 2, 8, 'normal', 1.00),
+(2, 3, 1, 'couple', 1.20), (2, 3, 2, 'couple', 1.20), (2, 3, 3, 'couple', 1.20), (2, 3, 4, 'couple', 1.20),
+(2, 3, 5, 'couple', 1.20), (2, 3, 6, 'couple', 1.20), (2, 3, 7, 'couple', 1.20), (2, 3, 8, 'couple', 1.20);
+
+-- 场次31的座位
+INSERT INTO `seat` (`show_id`, `row_number`, `column_number`, `seat_type`, `price_multiplier`) VALUES
+(31, 1, 1, 'normal', 1.00), (31, 1, 2, 'normal', 1.00), (31, 1, 3, 'normal', 1.00), (31, 1, 4, 'normal', 1.00),
+(31, 1, 5, 'normal', 1.00), (31, 1, 6, 'normal', 1.00), (31, 1, 7, 'normal', 1.00), (31, 1, 8, 'normal', 1.00),
+(31, 2, 1, 'normal', 1.00), (31, 2, 2, 'normal', 1.00), (31, 2, 3, 'normal', 1.00), (31, 2, 4, 'normal', 1.00),
+(31, 2, 5, 'normal', 1.00), (31, 2, 6, 'normal', 1.00), (31, 2, 7, 'normal', 1.00), (31, 2, 8, 'normal', 1.00),
+(31, 3, 1, 'couple', 1.20), (31, 3, 2, 'couple', 1.20), (31, 3, 3, 'couple', 1.20), (31, 3, 4, 'couple', 1.20),
+(31, 3, 5, 'couple', 1.20), (31, 3, 6, 'couple', 1.20), (31, 3, 7, 'couple', 1.20), (31, 3, 8, 'couple', 1.20);
+
+-- 场次40的座位
+INSERT INTO `seat` (`show_id`, `row_number`, `column_number`, `seat_type`, `price_multiplier`) VALUES
+(40, 1, 1, 'normal', 1.00), (40, 1, 2, 'normal', 1.00), (40, 1, 3, 'normal', 1.00), (40, 1, 4, 'normal', 1.00),
+(40, 1, 5, 'normal', 1.00), (40, 1, 6, 'normal', 1.00), (40, 1, 7, 'normal', 1.00), (40, 1, 8, 'normal', 1.00),
+(40, 2, 1, 'normal', 1.00), (40, 2, 2, 'normal', 1.00), (40, 2, 3, 'normal', 1.00), (40, 2, 4, 'normal', 1.00),
+(40, 2, 5, 'normal', 1.00), (40, 2, 6, 'normal', 1.00), (40, 2, 7, 'normal', 1.00), (40, 2, 8, 'normal', 1.00),
+(40, 3, 1, 'couple', 1.20), (40, 3, 2, 'couple', 1.20), (40, 3, 3, 'couple', 1.20), (40, 3, 4, 'couple', 1.20),
+(40, 3, 5, 'couple', 1.20), (40, 3, 6, 'couple', 1.20), (40, 3, 7, 'couple', 1.20), (40, 3, 8, 'couple', 1.20);
+
+-- 场次65的座位（沙丘2）
+INSERT INTO `seat` (`show_id`, `row_number`, `column_number`, `seat_type`, `price_multiplier`) VALUES
+(65, 1, 1, 'normal', 1.00), (65, 1, 2, 'normal', 1.00), (65, 1, 3, 'normal', 1.00), (65, 1, 4, 'normal', 1.00),
+(65, 1, 5, 'normal', 1.00), (65, 1, 6, 'normal', 1.00), (65, 1, 7, 'normal', 1.00), (65, 1, 8, 'normal', 1.00),
+(65, 2, 1, 'normal', 1.00), (65, 2, 2, 'normal', 1.00), (65, 2, 3, 'normal', 1.00), (65, 2, 4, 'normal', 1.00),
+(65, 2, 5, 'normal', 1.00), (65, 2, 6, 'normal', 1.00), (65, 2, 7, 'normal', 1.00), (65, 2, 8, 'normal', 1.00),
+(65, 3, 1, 'couple', 1.20), (65, 3, 2, 'couple', 1.20), (65, 3, 3, 'couple', 1.20), (65, 3, 4, 'couple', 1.20),
+(65, 3, 5, 'couple', 1.20), (65, 3, 6, 'couple', 1.20), (65, 3, 7, 'couple', 1.20), (65, 3, 8, 'couple', 1.20);
 
 -- =====================================================
 -- 14. 系统配置表 (system_config)
@@ -560,8 +640,8 @@ ALTER TABLE `user_coupon` ADD CONSTRAINT `fk_user_coupon_coupon` FOREIGN KEY (`c
 -- 为hall表添加外键约束
 ALTER TABLE `hall` ADD CONSTRAINT `fk_hall_theater` FOREIGN KEY (`theater_id`) REFERENCES `theater` (`id`) ON DELETE CASCADE;
 
--- 为seat表添加外键约束
-ALTER TABLE `seat` ADD CONSTRAINT `fk_seat_hall` FOREIGN KEY (`hall_id`) REFERENCES `hall` (`id`) ON DELETE CASCADE;
+-- 为seat表添加外键约束（注释掉，因为座位表使用show_id而不是hall_id）
+-- ALTER TABLE `seat` ADD CONSTRAINT `fk_seat_hall` FOREIGN KEY (`hall_id`) REFERENCES `hall` (`id`) ON DELETE CASCADE;
 
 -- =====================================================
 -- 19. 创建视图

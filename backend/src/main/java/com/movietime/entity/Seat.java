@@ -4,10 +4,19 @@ import java.io.Serializable;
 
 public class Seat implements Serializable {
     private static final long serialVersionUID = 1L;
+    private long id;
     private long showId;
-    private int row;
-    private int col;
+    private int rowNum;
+    private int colNum;
     private boolean isBooked;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getShowId() {
         return showId;
@@ -18,19 +27,19 @@ public class Seat implements Serializable {
     }
 
     public int getRow() {
-        return row;
+        return rowNum;
     }
 
     public void setRow(int row) {
-        this.row = row;
+        this.rowNum = row;
     }
 
     public int getCol() {
-        return col;
+        return colNum;
     }
 
     public void setCol(int col) {
-        this.col = col;
+        this.colNum = col;
     }
 
     public boolean isBooked() {

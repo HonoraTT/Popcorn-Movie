@@ -102,8 +102,8 @@ public class ApiController {
                 userInfo.put("id", user.getId());
                 userInfo.put("email", user.getEmail());
                 userInfo.put("firstName", user.getFirstName());
-                userInfo.put("lastName", user.getLastName());
-                userInfo.put("username", user.getFirstName() + " " + user.getLastName());
+                userInfo.put("lastName", ""); // 数据库中没有单独的lastName字段
+                userInfo.put("username", user.getFirstName());
                 
                 response.put("success", true);
                 response.put("message", "登录成功");

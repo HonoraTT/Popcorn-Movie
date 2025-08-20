@@ -7,6 +7,6 @@ import java.util.List;
 public interface SeatDao {
 
     public void update(Seat seat);
-    public boolean occupied(Seat seat);
+    public Boolean occupied(Seat seat);
     public List<Seat> findAllBooked(long id);
 }

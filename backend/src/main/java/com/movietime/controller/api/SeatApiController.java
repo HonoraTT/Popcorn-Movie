@@ -76,16 +76,30 @@ public class SeatApiController {
     @PostMapping("/book")
     public ResponseEntity<?> bookSeats(@RequestBody BookingRequest request) {
         try {
+            System.out.println("=== 收到座位预订请求 ===");
+            System.out.println("ShowID: " + request.getShowId());
+            System.out.println("UserID: " + request.getUserId());
+            System.out.println("座位数量: " + (request.getSeats() != null ? request.getSeats().size() : 0));
+            
             // 实现真正的座位预订逻辑
             if (request.getShowId() == null || request.getSeats() == null || request.getSeats().isEmpty()) {
+                System.out.println("请求参数不完整");
                 Map<String, Object> response = new HashMap<>();
                 response.put("message", "请求参数不完整");
                 response.put("success", false);
                 return ResponseEntity.badRequest().body(response);
             }
             
+            // 打印座位详情
+            for (int i = 0; i < request.getSeats().size(); i++) {
+                Seat seat = request.getSeats().get(i);
+                System.out.println("座位" + (i+1) + ": ShowID=" + seat.getShowId() + ", Row=" + seat.getRow() + ", Col=" + seat.getCol() + ", isBooked=" + seat.isBooked());
+            }
+            
             // 调用服务层进行预订
+            System.out.println("调用座位服务进行预订...");
             boolean success = seatService.book(request.getSeats());
+            System.out.println("座位预订结果: " + success);
             
             if (success) {
                 // 创建用户订单

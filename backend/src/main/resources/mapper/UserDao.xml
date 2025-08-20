@@ -5,17 +5,29 @@
 
 <mapper namespace="com.movietime.dao.UserDao">
     <insert id="create" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO user (email, icon_path, first_name, last_name, password)
-        VALUES (#{email}, #{iconPath}, #{firstName}, #{lastName}, #{password})
+        INSERT INTO user (email, username, password, avatar)
+        VALUES (#{email}, #{firstName}, #{password}, #{iconPath})
     </insert>
 
     <select id="findOne" resultType="User">
-        SELECT * FROM user
+        SELECT 
+            id,
+            email,
+            username as firstName,
+            password,
+            avatar as iconPath
+        FROM user
         WHERE id = #{id}
     </select>
 
     <select id="findByUsername" resultType="User">
-        SELECT * FROM user
+        SELECT 
+            id,
+            email,
+            username as firstName,
+            password,
+            avatar as iconPath
+        FROM user
         WHERE email = #{email}
     </select>
 </mapper>

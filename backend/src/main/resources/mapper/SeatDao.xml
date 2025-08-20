@@ -7,18 +7,30 @@
     <update id="update">
         UPDATE seat
         <set>
-            <if test="isBooked != null">is_booked = #{isBooked}</if>
+            <if test="isBooked != null">
+                <choose>
+                    <when test="isBooked">status = 'booked'</when>
+                    <otherwise>status = 'available'</otherwise>
+                </choose>
+            </if>
         </set>
-        WHERE show_id = #{showId} AND `row` = #{row} AND col = #{col}
+        WHERE show_id = #{showId} AND `row_number` = #{row} AND `column_number` = #{col}
     </update>
 
-    <select id="occupied" resultType="boolean">
-        SELECT is_booked FROM seat
-        WHERE show_id = #{showId} AND `row` = #{row} AND col = #{col} FOR UPDATE
+    <select id="occupied" resultType="java.lang.Boolean">
+        SELECT CASE WHEN status = 'booked' THEN true ELSE false END as is_booked 
+        FROM seat
+        WHERE show_id = #{showId} AND `row_number` = #{row} AND `column_number` = #{col} FOR UPDATE
     </select>
 
     <select id="findAllBooked" resultType="Seat">
-        SELECT * FROM seat
-        WHERE show_id = #{id} AND is_booked = true
+        SELECT 
+            id,
+            show_id as showId,
+            `row_number` as rowNum,
+            `column_number` as colNum,
+            CASE WHEN status = 'booked' THEN true ELSE false END as isBooked
+        FROM seat
+        WHERE show_id = #{id} AND status = 'booked'
     </select>
 </mapper>

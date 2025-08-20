@@ -407,10 +407,21 @@ html, body {
   margin-right: 2% !important;
   margin-bottom: 3% !important;
   width: 18% !important;
+  display: inline-block !important;
+  vertical-align: top !important;
 }
 
 .w3l-movie-gride-agile:nth-child(5n) {
   margin-right: 0 !important;
+}
+
+/* 确保容器能正确换行 */
+.tab-content .tab-pane {
+  overflow: hidden !important;
+}
+
+.tab-content .tab-pane.active {
+  display: block !important;
 }
 
 /* 确保星空背景在所有情况下都显示 */

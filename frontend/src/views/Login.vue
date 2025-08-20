@@ -188,7 +188,8 @@ export default {
       loginForm,
       rules,
       loading,
-      handleLogin
+      handleLogin,
+      currentUser
     }
   }
 }

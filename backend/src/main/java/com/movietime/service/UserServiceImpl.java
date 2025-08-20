@@ -24,8 +24,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setEmail(username);
         user.setPassword(MD5Utils.encode(username + password));
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
+        user.setFirstName(firstName + " " + lastName); // 将firstName和lastName合并为username
         user.setIconPath("/images/user_icon/p1.png");
         userDao.create(user);
     }

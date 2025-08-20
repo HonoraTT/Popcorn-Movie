@@ -12,7 +12,7 @@ export function login(data) {
 // 用户注册
 export function register(data) {
   return request({
-    url: '/api/auth/register',
+    url: '/api/register',
     method: 'post',
     data
   })

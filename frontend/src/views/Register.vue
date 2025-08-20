@@ -307,7 +307,8 @@ export default {
       checkLastName,
       checkEmail,
       checkPassword,
-      checkConfirmPassword
+      checkConfirmPassword,
+      currentUser
     }
   }
 }
