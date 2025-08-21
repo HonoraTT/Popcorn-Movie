@@ -125,14 +125,15 @@
                           v-model="form.password" 
                           name="password" 
                           type="password"
+                          @input="checkPassword"
                           @blur="checkPassword"
                           :class="{ 'error': errors.password }"
                           class="form-input"
-                          placeholder="请输入密码（至少6位）"
+                          placeholder="请输入密码（至少6位，包含字母和数字）"
                         />
                       </div>
                       <span class="error-message" :style="{ visibility: errors.password ? 'visible' : 'hidden' }">
-                        密码至少需要6个字符
+                        {{ passwordHint || '密码至少需要6个字符，且必须包含字母和数字' }}
                       </span>
                     </div>
                     
@@ -203,6 +204,7 @@ export default {
     const router = useRouter()
     const store = useStore()
     const loading = ref(false)
+    const passwordHint = ref('')
     
     const currentUser = computed(() => store.getters.currentUser)
     
@@ -249,7 +251,28 @@ export default {
     }
 
     const checkPassword = () => {
-      errors.password = form.password !== '' && form.password.length < 6
+      if (form.password === '') {
+        errors.password = false
+        return
+      }
+      
+      // 检查密码格式：至少6位，包含字母和数字
+      const hasMinLength = form.password.length >= 6
+      const hasLetter = /[a-zA-Z]/.test(form.password)
+      const hasDigit = /\d/.test(form.password)
+      
+      errors.password = !(hasMinLength && hasLetter && hasDigit)
+      
+      // 更新密码提示信息
+      if (!hasMinLength) {
+        passwordHint.value = '密码至少需要6个字符'
+      } else if (!hasLetter) {
+        passwordHint.value = '密码必须包含字母'
+      } else if (!hasDigit) {
+        passwordHint.value = '密码必须包含数字'
+      } else {
+        passwordHint.value = ''
+      }
     }
 
     const checkConfirmPassword = () => {
@@ -308,7 +331,8 @@ export default {
       checkEmail,
       checkPassword,
       checkConfirmPassword,
-      currentUser
+      currentUser,
+      passwordHint
     }
   }
 }

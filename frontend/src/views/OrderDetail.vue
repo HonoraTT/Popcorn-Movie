@@ -279,8 +279,16 @@ export default {
 </script>
 
 <style scoped>
+/* 全局背景设置 */
+:deep(html), :deep(body) {
+  background: linear-gradient(135deg, #A3A4BC 0%, #7990A9 25%, #DABBAE 50%, #A3B7C3 100%) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+}
+
 .order-detail-page {
-  background: #f5f5f5;
+  background: linear-gradient(135deg, #A3A4BC 0%, #7990A9 25%, #DABBAE 50%, #A3B7C3 100%);
   min-height: 100vh;
   padding: 20px 0;
 }

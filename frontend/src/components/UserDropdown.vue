@@ -453,7 +453,7 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffe3d8 0%, #cea8d0 100%);
   color: white;
 }
 

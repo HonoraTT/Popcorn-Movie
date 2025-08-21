@@ -354,9 +354,9 @@ h4.latest-text {
   margin-left: 0 !important;
 }
 
-/* 星空背景效果 - 强制覆盖 */
+/* 弥散渐变背景效果 - 强制覆盖 */
 html, body {
-  background: #1b2735 !important;
+  background: linear-gradient(135deg, #D7B3BE 0%, #A8B5C0 25%, #E5CFC7 50%, #6F8AA7 100%) !important;
   margin: 0 !important;
   padding: 0 !important;
   min-height: 100vh !important;
@@ -424,33 +424,12 @@ html, body {
   display: block !important;
 }
 
-/* 确保星空背景在所有情况下都显示 */
+/* 确保弥散渐变背景在所有情况下都显示 */
 body {
-  background: #1b2735 !important;
+  background: linear-gradient(135deg, #D7B3BE 0%, #A8B5C0 25%, #E5CFC7 50%, #6F8AA7 100%) !important;
 }
 
-body::before {
-  content: '' !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  background-image: 
-    radial-gradient(2px 2px at 20px 30px, #eee, transparent),
-    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1px 1px at 90px 40px, #fff, transparent),
-    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
-    radial-gradient(2px 2px at 160px 30px, #ddd, transparent),
-    radial-gradient(1px 1px at 200px 150px, #fff, transparent),
-    radial-gradient(2px 2px at 300px 80px, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1px 1px at 400px 200px, #ddd, transparent) !important;
-  background-repeat: repeat !important;
-  background-size: 400px 200px !important;
-  animation: twinkle 4s ease-in-out infinite !important;
-  z-index: -1 !important;
-  pointer-events: none !important;
-}
+
 
 /* 统一首页横幅尺寸为1500*500 */
 .carousel {
@@ -641,31 +620,7 @@ body::before {
   }
 }
 
-@keyframes twinkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
-}
 
-/* 电影主题渐变（备用方案） */
-/*
-html, body {
-  background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%) !important;
-  min-height: 100vh;
-  position: relative;
-}
 
-html::before, body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
-  z-index: -1;
-}
-*/
+
 </style> 
